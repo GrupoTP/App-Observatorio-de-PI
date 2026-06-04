@@ -1,0 +1,15 @@
+:root {
+    --bs-primary: #004b8d;
+    --bs-primary-rgb: 0, 75, 141;
+}
+
+.navbar.bg-primary {
+    background-color: #004b8d !important;
+}
+
+.btn-primary {
+    --bs-btn-bg: #004b8d;
+    --bs-btn-border-color: #004b8d;
+    --bs-btn-hover-bg: #003a6e;
+    --bs-btn-hover-border-color: #003a6e;
+}
