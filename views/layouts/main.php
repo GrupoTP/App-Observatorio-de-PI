@@ -1,3 +1,4 @@
+<!-- Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved. -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

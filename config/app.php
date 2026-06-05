@@ -1,5 +1,10 @@
 <?php
 
+
+/*
+ * Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved.
+ */
+
 declare(strict_types=1);
 
 return [

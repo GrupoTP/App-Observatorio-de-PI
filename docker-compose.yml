@@ -1,3 +1,5 @@
+# Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved.
+
 services:
   web:
     build:
@@ -10,6 +12,7 @@ services:
       - "${APP_PORT:-8080}:80"
     volumes:
       - .:/var/www/html
+      - ./public/assets/uploads:/var/www/html/public/assets/uploads
     environment:
       DB_HOST: db
       DB_PORT: 3306
@@ -33,7 +36,14 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:-opi_secret}
     volumes:
       - db_data:/var/lib/mysql
-      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./sql/schema/01_usuario.sql:/docker-entrypoint-initdb.d/01_usuario.sql:ro
+      - ./sql/schema/02_curso_turma.sql:/docker-entrypoint-initdb.d/02_curso_turma.sql:ro
+      - ./sql/schema/03_matricula_alocacao.sql:/docker-entrypoint-initdb.d/03_matricula_alocacao.sql:ro
+      - ./sql/schema/04_projeto.sql:/docker-entrypoint-initdb.d/04_projeto.sql:ro
+      - ./sql/schema/05_feedback_anexo.sql:/docker-entrypoint-initdb.d/05_feedback_anexo.sql:ro
+      - ./sql/schema/06_relacionamentos_nn.sql:/docker-entrypoint-initdb.d/06_relacionamentos_nn.sql:ro
+      - ./sql/schema/07_extensions.sql:/docker-entrypoint-initdb.d/07_extensions.sql:ro
+      - ./sql/seeds/dev.sql:/docker-entrypoint-initdb.d/08_dev.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s

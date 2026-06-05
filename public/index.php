@@ -1,30 +1,19 @@
 <?php
 
+
+/*
+ * Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved.
+ */
+
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/bootstrap.php';
 
-use App\Database;
+use App\Http\Request;
 use App\Router;
 
 $router = new Router();
+require dirname(__DIR__) . '/config/routes.php';
 
-$router->get('/', function () {
-    $dbStatus = 'disconnected';
-    $dbError = null;
-
-    try {
-        Database::connection()->query('SELECT 1');
-        $dbStatus = 'connected';
-    } catch (Throwable $exception) {
-        $dbError = $exception->getMessage();
-    }
-
-    view('home', [
-        'appName' => config('app.name'),
-        'dbStatus' => $dbStatus,
-        'dbError' => $dbError,
-    ]);
-});
-
-$router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+$request = new Request();
+$router->dispatch($request);

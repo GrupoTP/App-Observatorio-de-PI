@@ -1,3 +1,5 @@
+# Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved.
+
 FROM php:8.3-apache
 
 RUN docker-php-ext-install pdo pdo_mysql \

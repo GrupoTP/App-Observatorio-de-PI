@@ -1,6 +1,18 @@
 <?php
 
+
+/*
+ * Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved.
+ */
+
 declare(strict_types=1);
+
+require_once __DIR__ . '/src/Support/Env.php';
+\App\Support\Env::load(__DIR__ . '/.env');
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 require_once __DIR__ . '/src/helpers.php';
 
@@ -20,11 +32,11 @@ spl_autoload_register(static function (string $class): void {
     }
 });
 
-$config = require __DIR__ . '/config/app.php';
+$GLOBALS['config'] = require __DIR__ . '/config/app.php';
 
 function config(string $key, mixed $default = null): mixed
 {
-    global $config;
+    $config = $GLOBALS['config'] ?? [];
 
     $segments = explode('.', $key);
     $value = $config;

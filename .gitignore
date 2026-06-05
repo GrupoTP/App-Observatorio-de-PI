@@ -1,5 +1,9 @@
+# Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved.
+
 .env
 vendor/
+public/assets/uploads/*
+!public/assets/uploads/.gitkeep
 .idea/
 .vscode/
 *.log

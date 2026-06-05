@@ -1,15 +1,200 @@
+/* Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved. */
+
 :root {
-    --bs-primary: #004b8d;
-    --bs-primary-rgb: 0, 75, 141;
+    --senac-blue: #004b8d;
+    --senac-yellow: #ffd200;
+    --senac-yellow-hover: #e6bd00;
+    --senac-black: #1a1a1a;
+    --senac-gray-dark: #4d4d4d;
+    --senac-gray-medium: #6c6c6c;
+    --senac-gray-light: #f5f5f5;
+    --senac-green: #1e7a44;
+    --senac-orange: #d35400;
+    --senac-red: #c0392b;
+    --senac-alert-bg: #fff8cc;
 }
 
-.navbar.bg-primary {
-    background-color: #004b8d !important;
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--senac-black);
+    background-color: var(--senac-gray-light);
 }
 
-.btn-primary {
-    --bs-btn-bg: #004b8d;
-    --bs-btn-border-color: #004b8d;
-    --bs-btn-hover-bg: #003a6e;
-    --bs-btn-hover-border-color: #003a6e;
+.bg-senac-blue { background-color: var(--senac-blue) !important; }
+.text-senac-blue { color: var(--senac-blue) !important; }
+.text-senac-yellow { color: var(--senac-yellow) !important; }
+
+.btn-senac-primary {
+    background-color: var(--senac-yellow);
+    border-color: var(--senac-yellow);
+    color: var(--senac-black);
+    font-weight: 600;
+    min-height: 48px;
+    border-radius: 8px;
+}
+
+.btn-senac-primary:hover,
+.btn-senac-primary:focus {
+    background-color: var(--senac-yellow-hover);
+    border-color: var(--senac-yellow-hover);
+    color: var(--senac-black);
+}
+
+.btn-senac-secondary {
+    background-color: var(--senac-blue);
+    border-color: var(--senac-blue);
+    color: #fff;
+    font-weight: 600;
+    min-height: 48px;
+    border-radius: 8px;
+}
+
+.btn-senac-secondary:hover {
+    background-color: #003a6e;
+    border-color: #003a6e;
+    color: #fff;
+}
+
+.btn-senac-outline {
+    border: 2px solid var(--senac-blue);
+    color: var(--senac-blue);
+    background: transparent;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.app-header {
+    background-color: var(--senac-blue);
+    color: #fff;
+    min-height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 1040;
+}
+
+.app-header .menu-toggle {
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: transparent;
+    color: var(--senac-yellow);
+    border-radius: 8px;
+}
+
+.app-header .menu-toggle:hover,
+.app-header .menu-toggle:focus {
+    background: rgba(255, 255, 255, 0.1);
+    outline: 2px solid var(--senac-yellow);
+    outline-offset: 2px;
+}
+
+.app-footer {
+    background-color: var(--senac-blue);
+    color: #fff;
+}
+
+.mobile-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    display: none;
+}
+
+.mobile-menu-overlay.show { display: block; }
+
+.mobile-menu-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(320px, 85vw);
+    height: 100%;
+    background: #fff;
+    z-index: 1060;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+}
+
+.mobile-menu-panel.show { transform: translateX(0); }
+
+.mobile-menu-panel a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    color: var(--senac-black);
+    text-decoration: none;
+    border-bottom: 1px solid #eee;
+}
+
+.mobile-menu-panel a:hover,
+.mobile-menu-panel a.active {
+    background: var(--senac-gray-light);
+    color: var(--senac-blue);
+}
+
+.stats-card {
+    border-radius: 12px;
+    border: none;
+    min-height: 120px;
+}
+
+.stats-card.yellow { background: var(--senac-yellow); color: var(--senac-black); }
+.stats-card.green { background: #d4edda; color: var(--senac-green); }
+.stats-card.orange { background: var(--senac-alert-bg); color: var(--senac-orange); }
+
+.project-card {
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+    transition: box-shadow 0.2s;
+}
+
+.project-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.login-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--senac-blue) 0%, #003a6e 100%);
+}
+
+.login-card {
+    border-radius: 12px;
+    max-width: 440px;
+}
+
+.page-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1rem 1rem 2rem;
+}
+
+@media (min-width: 768px) {
+    .page-container { padding: 1.5rem 2rem 2rem; }
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--senac-blue);
+    box-shadow: 0 0 0 0.2rem rgba(0, 75, 141, 0.25);
+}
+
+.badge-status { font-weight: 600; padding: 0.35em 0.65em; border-radius: 6px; }
+
+.alert-senac-warning {
+    background: var(--senac-alert-bg);
+    border-color: var(--senac-orange);
+    color: var(--senac-black);
+}
+
+.logo-box {
+    background: #fff;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+    color: var(--senac-blue);
+    font-size: 0.85rem;
 }
