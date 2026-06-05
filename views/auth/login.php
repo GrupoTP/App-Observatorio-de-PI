@@ -1,40 +1,48 @@
 <!-- Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved. -->
-<div class="login-page d-flex align-items-center justify-content-center p-3">
-    <div class="card login-card shadow-lg w-100">
-        <div class="card-body p-4 p-md-5">
-            <div class="text-center mb-4">
-                <span class="logo-box fs-5 mb-3">SENAC</span>
-                <h1 class="h4 fw-bold text-senac-blue mt-3">Observatório de Projetos Integradores</h1>
-                <p class="text-muted small">Faculdade Senac Recife</p>
-            </div>
+<div class="auth-page d-flex flex-column min-vh-100">
+    <div class="auth-page__main flex-grow-1 d-flex align-items-center justify-content-center p-4">
+        <div class="auth-card-shell w-100">
+            <div class="auth-card">
+                <?php require dirname(__DIR__) . '/partials/auth-card-header.php'; ?>
 
-            <form method="post" action="/login" novalidate>
-                <?= csrf_field() ?>
+                <?php require dirname(__DIR__) . '/partials/auth-flash.php'; ?>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">E-mail institucional</label>
-                    <input type="email" class="form-control form-control-lg" id="email" name="email" required
-                           placeholder="seu.email@senac.edu.br" value="<?= old('email') ?>">
-                </div>
+                <form method="post" action="/login" class="auth-form" novalidate>
+                    <?= csrf_field() ?>
 
-                <div class="mb-4">
-                    <label for="password" class="form-label">Senha</label>
-                    <div class="input-group">
-                        <input type="password" class="form-control form-control-lg" id="password" name="password" required>
-                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password', this)" aria-label="Mostrar senha">
-                            <i class="bi bi-eye"></i>
-                        </button>
+                    <div class="auth-field">
+                        <label for="email" class="auth-label">
+                            E-mail <span class="text-senac-error">*</span>
+                        </label>
+                        <input type="email" class="auth-input" id="email" name="email" required
+                               placeholder="seu.email@senac.edu.br" value="<?= old('email') ?>" autocomplete="email">
                     </div>
-                </div>
 
-                <button type="submit" class="btn btn-senac-primary w-100 mb-3">
-                    <i class="bi bi-box-arrow-in-right me-2"></i> Entrar
-                </button>
-            </form>
+                    <div class="auth-field">
+                        <label for="password" class="auth-label auth-label--sm">
+                            Senha <span class="text-senac-error">*</span>
+                        </label>
+                        <div class="auth-password-wrap">
+                            <input type="password" class="auth-input auth-input--password" id="password" name="password"
+                                   required placeholder="Digite sua senha" autocomplete="current-password">
+                            <button type="button" class="auth-password-toggle" onclick="togglePassword('password', this)"
+                                    aria-label="Mostrar senha">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
 
-            <div class="alert alert-light border small mb-0">
-                <strong>Demo:</strong> aluno@aluno, professor@professor, admin@admin — senha: <code>senac123</code>
+                    <button type="submit" class="auth-btn-primary">
+                        Entrar
+                    </button>
+
+                    <div class="text-center">
+                        <a href="#" class="auth-forgot-link">Esqueci minha senha</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+
+    <?php require dirname(__DIR__) . '/partials/auth-footer.php'; ?>
 </div>
