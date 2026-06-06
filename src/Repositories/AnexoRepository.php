@@ -53,12 +53,53 @@ final class AnexoRepository
     public function forProject(string $projectId): array
     {
         $stmt = Database::connection()->prepare(
-            'SELECT id_anexo, id_projeto, id_usuario, nome, data_envio, descricao, miniatura, ativo
+            'SELECT id_anexo, id_projeto, id_usuario, nome, data_envio, descricao, miniatura, bytes, ativo
              FROM anexo WHERE id_projeto = :id AND ativo = 1 ORDER BY data_envio DESC'
         );
         $stmt->execute(['id' => $projectId]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countActiveForProject(string $projectId): int
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT COUNT(*) FROM anexo WHERE id_projeto = :id AND ativo = 1'
+        );
+        $stmt->execute(['id' => $projectId]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function isActiveForProject(string $anexoId, string $projectId): bool
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT 1 FROM anexo WHERE id_anexo = :anexo AND id_projeto = :projeto AND ativo = 1 LIMIT 1'
+        );
+        $stmt->execute(['anexo' => $anexoId, 'projeto' => $projectId]);
+
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public function updateMetadata(string $anexoId, string $nome, string $descricao): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE anexo SET nome = :nome, descricao = :desc
+             WHERE id_anexo = :id AND ativo = 1'
+        );
+        $stmt->execute([
+            'id' => $anexoId,
+            'nome' => $nome,
+            'desc' => $descricao,
+        ]);
+    }
+
+    public function softDelete(string $anexoId): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE anexo SET ativo = 0 WHERE id_anexo = :id AND ativo = 1'
+        );
+        $stmt->execute(['id' => $anexoId]);
     }
 
     public function professorAllocatedToTurma(string $professorId, string $turmaCode): bool

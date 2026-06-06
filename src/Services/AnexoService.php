@@ -81,4 +81,20 @@ final class AnexoService
 
         return $root;
     }
+
+    /** @param array<string, mixed> $anexo */
+    public function deleteStoredFiles(array $anexo): void
+    {
+        foreach (['bytes', 'miniatura'] as $field) {
+            $relativePath = $anexo[$field] ?? null;
+            if (!is_string($relativePath) || $relativePath === '') {
+                continue;
+            }
+
+            $absolutePath = $this->storageRoot() . '/' . $relativePath;
+            if (is_file($absolutePath)) {
+                @unlink($absolutePath);
+            }
+        }
+    }
 }

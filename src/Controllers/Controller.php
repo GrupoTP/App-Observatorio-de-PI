@@ -18,8 +18,8 @@ abstract class Controller
     protected function requireCsrf(Request $request): void
     {
         if (!$request->validateCsrf()) {
-            Flash::error('Sessão expirada. Tente novamente.');
-            redirect($_SERVER['HTTP_REFERER'] ?? '/');
+            Flash::error('Sessão expirada. Atualize a página e tente novamente.');
+            redirect('/login');
         }
     }
 

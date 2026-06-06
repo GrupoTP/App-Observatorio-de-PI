@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Auth\SessionAuth;
+use App\Repositories\AnexoRepository;
 use App\Repositories\ProjetoRepository;
 use App\Repositories\TurmaRepository;
 use App\Support\Uuid;
@@ -20,6 +21,8 @@ final class ProjetoService
         private readonly ProjetoRepository $projetos = new ProjetoRepository(),
         private readonly TurmaRepository $turmas = new TurmaRepository(),
         private readonly UploadService $uploads = new UploadService(),
+        private readonly AnexoRepository $anexos = new AnexoRepository(),
+        private readonly AnexoService $anexoStorage = new AnexoService(),
     ) {
     }
 
@@ -86,6 +89,9 @@ final class ProjetoService
      * @param array<string, mixed> $input
      * @param list<array{name: string, type: string, tmp_name: string, error: int, size: int}> $files
      * @param list<string> $attachmentDescriptions
+     * @param array<string, string> $existingAttachmentNames
+     * @param array<string, string> $existingAttachmentDescriptions
+     * @param list<string> $removeAttachmentIds
      */
     public function updateForAluno(
         string $projectId,
@@ -93,12 +99,21 @@ final class ProjetoService
         array $input,
         array $files = [],
         array $attachmentDescriptions = [],
+        array $existingAttachmentNames = [],
+        array $existingAttachmentDescriptions = [],
+        array $removeAttachmentIds = [],
     ): void {
         if (!$this->canAlunoAccess($projectId, $userId) || !$this->isOwner($projectId, $userId)) {
             throw new \RuntimeException('Sem permissão para editar este projeto.');
         }
 
         $validated = $this->validateSubmissaoInput($input, $files, requireAttachments: false, requireTurma: false);
+        $this->assertProjectWillHaveAttachments(
+            $projectId,
+            $removeAttachmentIds,
+            $files,
+            $existingAttachmentNames,
+        );
 
         $this->projetos->update($projectId, [
             'titulo' => $validated['titulo'],
@@ -113,6 +128,13 @@ final class ProjetoService
         if ($files !== []) {
             $this->uploads->storeProjectFiles($files, $projectId, $userId, $attachmentDescriptions);
         }
+
+        $this->applyExistingAttachmentChanges(
+            $projectId,
+            $existingAttachmentNames,
+            $existingAttachmentDescriptions,
+            $removeAttachmentIds,
+        );
     }
 
     public function isOwner(string $projectId, string $userId): bool
@@ -183,6 +205,93 @@ final class ProjetoService
         }
 
         return $count;
+    }
+
+    /**
+     * @param list<string> $removeAttachmentIds
+     * @param list<array{name: string, type: string, tmp_name: string, error: int, size: int}> $newFiles
+     * @param array<string, string> $existingAttachmentNames
+     */
+    private function assertProjectWillHaveAttachments(
+        string $projectId,
+        array $removeAttachmentIds,
+        array $newFiles,
+        array $existingAttachmentNames,
+    ): void {
+        $current = $this->anexos->forProject($projectId);
+        $currentIds = array_map(static fn (array $anexo): string => (string) $anexo['id_anexo'], $current);
+        $removeIds = array_values(array_unique(array_filter($removeAttachmentIds)));
+
+        foreach ($removeIds as $anexoId) {
+            if (!in_array($anexoId, $currentIds, true)) {
+                throw new \RuntimeException('Anexo inválido para remoção.');
+            }
+        }
+
+        foreach ($current as $anexo) {
+            $anexoId = (string) $anexo['id_anexo'];
+            if (in_array($anexoId, $removeIds, true)) {
+                continue;
+            }
+
+            $nome = trim($existingAttachmentNames[$anexoId] ?? (string) $anexo['nome']);
+            if ($nome === '') {
+                throw new \RuntimeException('Informe o nome de todos os anexos mantidos.');
+            }
+        }
+
+        $keptCount = count($currentIds) - count($removeIds);
+        if ($keptCount + count($newFiles) < 1) {
+            throw new \RuntimeException('O projeto deve ter ao menos um anexo.');
+        }
+    }
+
+    /**
+     * @param array<string, string> $existingAttachmentNames
+     * @param array<string, string> $existingAttachmentDescriptions
+     * @param list<string> $removeAttachmentIds
+     */
+    private function applyExistingAttachmentChanges(
+        string $projectId,
+        array $existingAttachmentNames,
+        array $existingAttachmentDescriptions,
+        array $removeAttachmentIds,
+    ): void {
+        $current = $this->anexos->forProject($projectId);
+        $removeIds = array_values(array_unique(array_filter($removeAttachmentIds)));
+
+        foreach ($current as $anexo) {
+            $anexoId = (string) $anexo['id_anexo'];
+            if (in_array($anexoId, $removeIds, true)) {
+                continue;
+            }
+
+            if (!array_key_exists($anexoId, $existingAttachmentNames)) {
+                continue;
+            }
+
+            $nome = trim($existingAttachmentNames[$anexoId]);
+            $descricao = trim($existingAttachmentDescriptions[$anexoId] ?? '');
+            if ($descricao === '') {
+                $descricao = $nome;
+            }
+
+            $this->anexos->updateMetadata($anexoId, $nome, $descricao);
+        }
+
+        foreach ($removeIds as $anexoId) {
+            if (!$this->anexos->isActiveForProject($anexoId, $projectId)) {
+                continue;
+            }
+
+            $anexo = $this->anexos->findById($anexoId);
+            if ($anexo === null) {
+                continue;
+            }
+
+            $this->anexos->softDelete($anexoId);
+            $this->anexoStorage->deleteStoredFiles($anexo);
+        }
     }
 
     /**

@@ -22,6 +22,10 @@ function disableBrowserAutofillHints() {
     });
 
     document.querySelectorAll('input, textarea, select').forEach(function (field) {
+        if (field.closest('.auth-form')) {
+            return;
+        }
+
         const type = (field.getAttribute('type') || '').toLowerCase();
 
         if (type === 'hidden' || type === 'submit' || type === 'button' || type === 'reset' || type === 'file') {
@@ -295,6 +299,8 @@ function bindFileUploadZone(zone) {
             return;
         }
 
+        const attachmentsRequired = manager.dataset.attachmentsRequired !== 'false';
+
         const syncRemoveButtons = function () {
             const rows = list.querySelectorAll('[data-attachment-row]');
             rows.forEach(function (row, index) {
@@ -309,10 +315,15 @@ function bindFileUploadZone(zone) {
                     removeBtn.classList.remove('d-none');
                 }
 
-                if (index === 0) {
-                    row.querySelector('[data-file-input]')?.setAttribute('required', '');
+                const fileInput = row.querySelector('[data-file-input]');
+                if (!fileInput) {
+                    return;
+                }
+
+                if (attachmentsRequired && index === 0) {
+                    fileInput.setAttribute('required', '');
                 } else {
-                    row.querySelector('[data-file-input]')?.removeAttribute('required');
+                    fileInput.removeAttribute('required');
                 }
             });
         };
@@ -386,6 +397,223 @@ function bindFileUploadZone(zone) {
         });
 
         syncRemoveButtons();
+    });
+})();
+
+(function () {
+    const form = document.querySelector('[data-projeto-edit-form]');
+    if (!form) {
+        return;
+    }
+
+    const errorEl = form.querySelector('[data-projeto-edit-attachment-error]');
+
+    const countKeptExistingAttachments = function () {
+        return form.querySelectorAll('[data-existing-attachment]:not(.app-existing-attachment--marked-remove)').length;
+    };
+
+    const countNewAttachmentFiles = function () {
+        return Array.from(form.querySelectorAll('[data-file-input]')).filter(function (input) {
+            return input.files && input.files.length > 0;
+        }).length;
+    };
+
+    const hasMinimumAttachments = function () {
+        return countKeptExistingAttachments() + countNewAttachmentFiles() >= 1;
+    };
+
+    const setAttachmentMarkedForRemoval = function (row, marked) {
+        const removeInput = row.querySelector('[data-anexo-remove-input]');
+        const removeBtn = row.querySelector('[data-mark-anexo-remove]');
+        const undoBtn = row.querySelector('[data-unmark-anexo-remove]');
+        const fields = row.querySelectorAll('[data-existing-anexo-nome], [data-existing-anexo-descricao]');
+
+        if (marked) {
+            row.classList.add('app-existing-attachment--marked-remove');
+            if (removeInput) {
+                removeInput.checked = true;
+            }
+            removeBtn?.classList.add('d-none');
+            undoBtn?.classList.remove('d-none');
+            fields.forEach(function (field) {
+                field.disabled = true;
+                field.removeAttribute('required');
+            });
+        } else {
+            row.classList.remove('app-existing-attachment--marked-remove');
+            if (removeInput) {
+                removeInput.checked = false;
+            }
+            removeBtn?.classList.remove('d-none');
+            undoBtn?.classList.add('d-none');
+            fields.forEach(function (field) {
+                field.disabled = false;
+            });
+            row.querySelector('[data-existing-anexo-nome]')?.setAttribute('required', '');
+        }
+
+        errorEl?.classList.add('d-none');
+    };
+
+    form.querySelectorAll('[data-mark-anexo-remove]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const row = button.closest('[data-existing-attachment]');
+            if (row) {
+                setAttachmentMarkedForRemoval(row, true);
+            }
+        });
+    });
+
+    form.querySelectorAll('[data-unmark-anexo-remove]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const row = button.closest('[data-existing-attachment]');
+            if (row) {
+                setAttachmentMarkedForRemoval(row, false);
+            }
+        });
+    });
+
+    form.querySelectorAll('[data-file-input]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            if (hasMinimumAttachments()) {
+                errorEl?.classList.add('d-none');
+            }
+        });
+    });
+
+    form.addEventListener('submit', function (event) {
+        errorEl?.classList.add('d-none');
+
+        if (!form.reportValidity()) {
+            event.preventDefault();
+            return;
+        }
+
+        if (!hasMinimumAttachments()) {
+            event.preventDefault();
+            errorEl?.classList.remove('d-none');
+            errorEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+})();
+
+(function () {
+    const filtersForm = document.querySelector('[data-projetos-filters]');
+    if (!filtersForm) {
+        return;
+    }
+
+    const statusSelect = filtersForm.querySelector('[name="status"]');
+    const searchInput = filtersForm.querySelector('[name="q"]');
+    let searchTimer;
+
+    statusSelect?.addEventListener('change', function () {
+        filtersForm.submit();
+    });
+
+    searchInput?.addEventListener('input', function () {
+        window.clearTimeout(searchTimer);
+        searchTimer = window.setTimeout(function () {
+            filtersForm.submit();
+        }, 400);
+    });
+})();
+
+(function () {
+    const viewModal = document.getElementById('project-view-modal');
+    const deleteModal = document.getElementById('project-delete-modal');
+    const deleteForm = document.getElementById('project-delete-form');
+
+    if (!viewModal && !deleteModal) {
+        return;
+    }
+
+    function openModal(modal) {
+        if (!modal) {
+            return;
+        }
+
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modal) {
+        if (!modal) {
+            return;
+        }
+
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('[data-modal-close]').forEach(function (el) {
+        el.addEventListener('click', function () {
+            closeModal(el.closest('.app-modal'));
+        });
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') {
+            return;
+        }
+
+        if (!viewModal?.hidden) {
+            closeModal(viewModal);
+        }
+
+        if (!deleteModal?.hidden) {
+            closeModal(deleteModal);
+        }
+    });
+
+    document.querySelectorAll('[data-project-view]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const card = button.closest('[data-project-card]');
+            if (!card || !viewModal) {
+                return;
+            }
+
+            const title = card.dataset.projectTitle || '';
+            const repoUrl = card.dataset.projectRepo || '';
+
+            viewModal.querySelector('#project-view-title').textContent = title;
+            viewModal.querySelector('[data-project-view-turma]').textContent = card.dataset.projectTurma || '—';
+            viewModal.querySelector('[data-project-view-descricao]').textContent = card.dataset.projectDescricao || '—';
+            viewModal.querySelector('[data-project-view-tecnologias]').textContent = card.dataset.projectTecnologias || '—';
+            viewModal.querySelector('[data-project-view-submitted]').textContent = card.dataset.projectSubmitted || '—';
+            viewModal.querySelector('[data-project-view-prazo]').textContent = card.dataset.projectPrazo || '—';
+
+            const repoLink = viewModal.querySelector('[data-project-view-repo]');
+            if (repoUrl) {
+                repoLink.href = repoUrl;
+                repoLink.textContent = repoUrl;
+                repoLink.classList.remove('d-none');
+            } else {
+                repoLink.href = '#';
+                repoLink.textContent = '—';
+            }
+
+            const editLink = viewModal.querySelector('[data-project-view-edit]');
+            if (editLink && card.dataset.projectId) {
+                editLink.href = '/projetos/' + encodeURIComponent(card.dataset.projectId) + '/editar';
+            }
+
+            openModal(viewModal);
+        });
+    });
+
+    document.querySelectorAll('[data-project-delete]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const card = button.closest('[data-project-card]');
+            if (!card || !deleteForm || !deleteModal) {
+                return;
+            }
+
+            deleteForm.action = '/projetos/' + encodeURIComponent(card.dataset.projectId || '') + '/excluir';
+            openModal(deleteModal);
+        });
     });
 })();
 

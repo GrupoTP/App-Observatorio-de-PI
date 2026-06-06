@@ -93,6 +93,21 @@ final class Request
         return array_map(static fn ($value): string => trim((string) $value), $_POST[$key]);
     }
 
+    /** @return array<string, string> */
+    public function inputMap(string $key): array
+    {
+        if (!isset($_POST[$key]) || !is_array($_POST[$key])) {
+            return [];
+        }
+
+        $values = [];
+        foreach ($_POST[$key] as $mapKey => $value) {
+            $values[(string) $mapKey] = trim((string) $value);
+        }
+
+        return $values;
+    }
+
     public function validateCsrf(): bool
     {
         return \App\Support\Csrf::validate($this->input('_csrf'));

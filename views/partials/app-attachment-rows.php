@@ -10,7 +10,7 @@ $attachmentRequired = $attachmentRequired ?? true;
 $allowMultiple = $allowMultiple ?? true;
 $rowId = 'anexo-row-' . bin2hex(random_bytes(4));
 ?>
-<div class="app-attachments" data-attachments-manager>
+<div class="app-attachments" data-attachments-manager data-attachments-required="<?= $attachmentRequired ? 'true' : 'false' ?>">
     <div class="app-attachment-list" data-attachment-list>
         <div class="app-attachment-row" data-attachment-row id="<?= e($rowId) ?>">
             <div class="app-file-upload" data-file-upload>

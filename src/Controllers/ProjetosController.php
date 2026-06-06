@@ -11,6 +11,8 @@ namespace App\Controllers;
 
 use App\Auth\SessionAuth;
 use App\Http\Request;
+use App\Repositories\AnexoRepository;
+use App\Repositories\FeedbackRepository;
 use App\Repositories\ProjetoRepository;
 use App\Services\ProjetoService;
 use App\Support\Flash;
@@ -24,12 +26,24 @@ final class ProjetosController extends Controller
         $status = $request->query('status', 'todos');
 
         $repo = new ProjetoRepository();
+        $feedbackRepo = new FeedbackRepository();
+        $projects = [];
+
+        foreach ($repo->forAluno($userId, $status === 'todos' ? null : $status, $search) as $project) {
+            $feedback = $feedbackRepo->findByProject($project['id_projeto']);
+            $project['grade'] = $feedbackRepo->averageGradeForProject($project['id_projeto'], $feedback);
+            $project['submitted_at'] = $feedback['data'] ?? $project['prazo_especial'] ?? null;
+            $project['turma_label'] = turma_display_label($project);
+            $projects[] = $project;
+        }
+
         $this->render('aluno/projetos', [
             'headerTitle' => 'Meus Projetos',
             'pageTitle' => 'Meus Projetos',
-            'projects' => $repo->forAluno($userId, $status === 'todos' ? null : $status, $search),
+            'projects' => $projects,
             'search' => $search ?? '',
             'status' => $status ?? 'todos',
+            'hasFilters' => ($search ?? '') !== '' || ($status ?? 'todos') !== 'todos',
         ]);
     }
 
@@ -46,10 +60,12 @@ final class ProjetosController extends Controller
         }
 
         $project = $repo->findById($id);
+        $attachments = (new AnexoRepository())->forProject($id);
         $this->render('aluno/projeto-form', [
             'headerTitle' => 'Editar Projeto',
             'pageTitle' => 'Editar Projeto',
             'project' => $project,
+            'attachments' => $attachments,
             'action' => '/projetos/' . $id . '/editar',
         ]);
     }
@@ -61,20 +77,32 @@ final class ProjetosController extends Controller
         $id = $params['id'] ?? '';
 
         try {
-            (new ProjetoService())->updateForAluno($id, $userId, [
-                'titulo' => $request->input('titulo', '') ?? '',
-                'descricao' => $request->input('descricao', '') ?? '',
-                'link_repo_git' => $request->input('link_repo_git', '') ?? '',
-                'tecnologias' => $request->input('tecnologias', '') ?? '',
-                'publico' => $request->input('publico'),
-                'nome_grupo' => $request->input('nome_grupo'),
-            ], $request->files('anexo_arquivo'), $request->inputList('anexo_descricao'));
+            (new ProjetoService())->updateForAluno(
+                $id,
+                $userId,
+                [
+                    'titulo' => $request->input('titulo', '') ?? '',
+                    'descricao' => $request->input('descricao', '') ?? '',
+                    'link_repo_git' => $request->input('link_repo_git', '') ?? '',
+                    'tecnologias' => $request->input('tecnologias', '') ?? '',
+                    'publico' => $request->input('publico'),
+                    'nome_grupo' => $request->input('nome_grupo'),
+                ],
+                $request->files('anexo_arquivo'),
+                $request->inputList('anexo_descricao'),
+                $request->inputMap('anexo_existente_nome'),
+                $request->inputMap('anexo_existente_descricao'),
+                $request->inputList('anexo_remover'),
+            );
             Flash::success('Projeto atualizado com sucesso.');
+            redirect('/projetos');
+
+            return;
         } catch (\Throwable $e) {
             Flash::error($e->getMessage());
         }
 
-        redirect('/projetos');
+        redirect('/projetos/' . $id . '/editar');
     }
 
     public function destroy(Request $request, array $params): void

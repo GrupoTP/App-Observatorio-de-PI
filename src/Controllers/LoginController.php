@@ -13,6 +13,7 @@ use App\Auth\SessionAuth;
 use App\Http\Request;
 use App\Repositories\UsuarioRepository;
 use App\Services\AuthService;
+use App\Support\Csrf;
 use App\Support\Flash;
 
 final class LoginController extends Controller
@@ -25,6 +26,8 @@ final class LoginController extends Controller
 
     public function show(Request $request, array $params = []): void
     {
+        Csrf::regenerate();
+
         if (SessionAuth::pendingUserId() !== null) {
             $this->render('auth/select-profile', [
                 'pageTitle' => 'Selecionar perfil',

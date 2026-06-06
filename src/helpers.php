@@ -94,6 +94,49 @@ function situacao_badge_class(string $situacao): string
     };
 }
 
+/** @return array{label: string, description: string, modifier: string, icon: string} */
+function projeto_status_meta(string $situacao): array
+{
+    return match ($situacao) {
+        'enviado' => [
+            'label' => 'Aguardando Avaliação',
+            'description' => 'Seu projeto foi enviado e está na fila de avaliação',
+            'modifier' => 'enviado',
+            'icon' => 'clock',
+        ],
+        'avaliado' => [
+            'label' => 'Avaliado - Nota Disponível',
+            'description' => 'Projeto avaliado com sucesso',
+            'modifier' => 'avaliado',
+            'icon' => 'circle-check-big',
+        ],
+        'em-correcao' => [
+            'label' => 'Em Correção pelo Professor',
+            'description' => 'Professor está avaliando seu projeto neste momento',
+            'modifier' => 'em-correcao',
+            'icon' => 'circle-alert',
+        ],
+        default => [
+            'label' => situacao_label($situacao),
+            'description' => '',
+            'modifier' => 'default',
+            'icon' => 'folder-open',
+        ],
+    };
+}
+
+/** @return array{code: string, label: string, modifier: string} */
+function nota_mencao_info(float $nota): array
+{
+    return match (true) {
+        $nota >= 9.5 => ['code' => 'AE', 'label' => 'Atendido com Excelência', 'modifier' => 'ae'],
+        $nota >= 8.0 => ['code' => 'O', 'label' => 'Ótimo', 'modifier' => 'o'],
+        $nota >= 6.5 => ['code' => 'B', 'label' => 'Bom', 'modifier' => 'b'],
+        $nota >= 4.0 => ['code' => 'ANS', 'label' => 'Ainda Não Suficiente', 'modifier' => 'ans'],
+        default => ['code' => 'I', 'label' => 'Insuficiente', 'modifier' => 'i'],
+    };
+}
+
 function admin_situacao_label(string $situacao): string
 {
     return match ($situacao) {
