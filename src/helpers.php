@@ -128,6 +128,19 @@ function user_display_name(?array $user): string
     return trim(($user['nome_civil_nome'] ?? '') . ' ' . ($user['nome_civil_sobrenome'] ?? ''));
 }
 
+function turma_display_label(?array $turma): string
+{
+    if ($turma === null) {
+        return '—';
+    }
+
+    $modulo = trim((string) ($turma['modulo'] ?? ''));
+    $curso = mb_strtolower((string) ($turma['nome_curso'] ?? ''));
+    $sigla = str_contains($curso, 'desenvolvimento de sistemas') ? 'ADS' : (string) ($turma['nome_curso'] ?? '');
+
+    return $modulo !== '' ? $sigla . ' - ' . $modulo : $sigla;
+}
+
 function lucide_tag(string $name, string $class = ''): string
 {
     $classAttr = trim($class);

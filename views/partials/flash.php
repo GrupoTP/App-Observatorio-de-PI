@@ -5,7 +5,7 @@
  */
 
  if (isset($flash) && $flash !== null): ?>
-<div class="page-container pt-3">
+<div class="app-page pt-3">
     <div class="alert alert-<?= $flash['type'] === 'error' ? 'danger' : 'success' ?> alert-dismissible fade show" role="alert">
         <?= e($flash['message']) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>

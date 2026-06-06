@@ -87,6 +87,59 @@ if (document.readyState === 'loading') {
     });
 })();
 
+(function () {
+    const textarea = document.getElementById('descricao');
+    const counter = document.getElementById('descricao-count');
+
+    if (textarea && counter) {
+        const updateCount = function () {
+            counter.textContent = textarea.value.length + '/500';
+        };
+
+        textarea.addEventListener('input', updateCount);
+        updateCount();
+    }
+})();
+
+(function () {
+    document.querySelectorAll('[data-file-upload]').forEach(function (zone) {
+        const input = zone.querySelector('[data-file-input]');
+        const placeholder = zone.querySelector('[data-file-placeholder]');
+        const selected = zone.querySelector('[data-file-selected]');
+        const nameEl = zone.querySelector('[data-file-name]');
+        const sizeEl = zone.querySelector('[data-file-size]');
+
+        if (!input || !placeholder || !selected) {
+            return;
+        }
+
+        const updateView = function () {
+            const file = input.files && input.files[0];
+
+            if (!file) {
+                placeholder.classList.remove('d-none');
+                selected.classList.add('d-none');
+                zone.classList.remove('app-file-upload--has-file');
+                return;
+            }
+
+            placeholder.classList.add('d-none');
+            selected.classList.remove('d-none');
+            zone.classList.add('app-file-upload--has-file');
+
+            if (nameEl) {
+                nameEl.textContent = file.name;
+            }
+
+            if (sizeEl) {
+                sizeEl.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            }
+        };
+
+        input.addEventListener('change', updateView);
+    });
+})();
+
 function togglePassword(inputId, btn) {
     const input = document.getElementById(inputId);
     if (!input) return;

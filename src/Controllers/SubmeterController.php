@@ -11,6 +11,7 @@ namespace App\Controllers;
 
 use App\Auth\SessionAuth;
 use App\Http\Request;
+use App\Repositories\TurmaRepository;
 use App\Services\ProjetoService;
 use App\Support\Flash;
 
@@ -18,9 +19,14 @@ final class SubmeterController extends Controller
 {
     public function create(Request $request, array $params = []): void
     {
+        $userId = SessionAuth::userId() ?? '';
+        $turma = (new TurmaRepository())->activeTurmaForAluno($userId);
+
         $this->render('aluno/submeter', [
             'headerTitle' => 'Submeter Projeto',
             'pageTitle' => 'Submeter Novo Projeto',
+            'turma' => $turma,
+            'turmaLabel' => turma_display_label($turma),
         ]);
     }
 
@@ -40,6 +46,7 @@ final class SubmeterController extends Controller
             ], $request->file('arquivo'));
             Flash::success('Projeto submetido com sucesso!');
         } catch (\Throwable $e) {
+            flash_old_input($request->allPost());
             Flash::error($e->getMessage());
             redirect('/submeter');
         }
