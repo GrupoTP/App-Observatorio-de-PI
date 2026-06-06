@@ -24,7 +24,9 @@ final class FeedbacksController extends Controller
         foreach ($feedbacks as &$fb) {
             $fb['rubrica'] = $repo->rubricaForFeedback((int) $fb['id_feedback']);
             $scores = array_map(static fn ($r) => (float) $r['conceito'], $fb['rubrica']);
-            $fb['media'] = $scores !== [] ? round(array_sum($scores) / count($scores), 1) : null;
+            $fb['conceito_final'] = $scores !== []
+                ? nota_para_conceito(round(array_sum($scores) / count($scores), 2))
+                : null;
         }
         unset($fb);
 

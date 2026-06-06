@@ -105,7 +105,7 @@ function projeto_status_meta(string $situacao): array
             'icon' => 'clock',
         ],
         'avaliado' => [
-            'label' => 'Avaliado - Nota Disponível',
+            'label' => 'Avaliado - Conceito Disponível',
             'description' => 'Projeto avaliado com sucesso',
             'modifier' => 'avaliado',
             'icon' => 'circle-check-big',
@@ -125,16 +125,72 @@ function projeto_status_meta(string $situacao): array
     };
 }
 
+/** @return list<array{code: string, label: string, modifier: string}> */
+function conceitos_senac(): array
+{
+    return [
+        ['code' => 'AE', 'label' => 'Atendido com Excelência', 'modifier' => 'ae'],
+        ['code' => 'O', 'label' => 'Ótimo', 'modifier' => 'o'],
+        ['code' => 'B', 'label' => 'Bom', 'modifier' => 'b'],
+        ['code' => 'ANS', 'label' => 'Ainda Não Suficiente', 'modifier' => 'ans'],
+        ['code' => 'I', 'label' => 'Insuficiente', 'modifier' => 'i'],
+    ];
+}
+
+function conceito_codigo_valido(string $code): bool
+{
+    return in_array(strtoupper(trim($code)), ['AE', 'O', 'B', 'ANS', 'I'], true);
+}
+
+/**
+ * Maps Senac concept code to the minimum internal numeric value for storage.
+ * Numeric values are never shown in the UI.
+ */
+function conceito_codigo_para_nota_interna(string $code): float
+{
+    return match (strtoupper(trim($code))) {
+        'AE' => 9.0,
+        'O' => 8.0,
+        'B' => 7.0,
+        'ANS' => 4.0,
+        'I' => 0.0,
+        default => throw new InvalidArgumentException('Invalid conceito code.'),
+    };
+}
+
+/** @return array{code: string, label: string, modifier: string} */
+function conceito_por_codigo(string $code): array
+{
+    foreach (conceitos_senac() as $conceito) {
+        if ($conceito['code'] === strtoupper(trim($code))) {
+            return $conceito;
+        }
+    }
+
+    throw new InvalidArgumentException('Unknown conceito code.');
+}
+
+/**
+ * Converts an internal numeric score to the Senac concept shown in the UI.
+ * AE: 9,0–10 | O: 8,0–8,9 | B: 7,0–7,9 | ANS: 4,0–6,9 | I: 0,0–3,9
+ *
+ * @return array{code: string, label: string, modifier: string}
+ */
+function nota_para_conceito(float $nota): array
+{
+    return match (true) {
+        $nota >= 9.0 => conceito_por_codigo('AE'),
+        $nota >= 8.0 => conceito_por_codigo('O'),
+        $nota >= 7.0 => conceito_por_codigo('B'),
+        $nota >= 4.0 => conceito_por_codigo('ANS'),
+        default => conceito_por_codigo('I'),
+    };
+}
+
 /** @return array{code: string, label: string, modifier: string} */
 function nota_mencao_info(float $nota): array
 {
-    return match (true) {
-        $nota >= 9.5 => ['code' => 'AE', 'label' => 'Atendido com Excelência', 'modifier' => 'ae'],
-        $nota >= 8.0 => ['code' => 'O', 'label' => 'Ótimo', 'modifier' => 'o'],
-        $nota >= 6.5 => ['code' => 'B', 'label' => 'Bom', 'modifier' => 'b'],
-        $nota >= 4.0 => ['code' => 'ANS', 'label' => 'Ainda Não Suficiente', 'modifier' => 'ans'],
-        default => ['code' => 'I', 'label' => 'Insuficiente', 'modifier' => 'i'],
-    };
+    return nota_para_conceito($nota);
 }
 
 function admin_situacao_label(string $situacao): string

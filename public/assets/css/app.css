@@ -1869,10 +1869,10 @@ h2.app-section-title {
     padding: 1rem;
 }
 
-.app-project-grade__score-row {
+.app-project-grade__conceito-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    flex-wrap: wrap;
     gap: 0.5rem;
 }
 
@@ -1880,37 +1880,6 @@ h2.app-section-title {
     font-size: 0.875rem;
     font-weight: 600;
     color: #166534;
-}
-
-.app-project-grade__score {
-    text-align: right;
-}
-
-.app-project-grade__value {
-    display: block;
-    font-size: 1.875rem;
-    font-weight: 700;
-    color: #15803d;
-    line-height: 1;
-}
-
-.app-project-grade__max {
-    font-size: 0.75rem;
-    color: #16a34a;
-}
-
-.app-project-grade__mencao {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid #bbf7d0;
-}
-
-.app-project-grade__mencao-label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #15803d;
-    margin-bottom: 0.5rem;
 }
 
 .app-mencao-badge {

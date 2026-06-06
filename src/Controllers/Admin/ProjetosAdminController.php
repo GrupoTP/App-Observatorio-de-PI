@@ -66,9 +66,12 @@ final class ProjetosAdminController extends Controller
 
         $scores = [];
         foreach ($_POST as $key => $value) {
-            if (str_starts_with($key, 'criterio_')) {
-                $scores[substr($key, 9)] = $value;
+            if (!str_starts_with($key, 'criterio_')) {
+                continue;
             }
+
+            $criterio = substr($key, 9);
+            $scores[$criterio] = (string) conceito_codigo_para_nota_interna((string) $value);
         }
 
         try {

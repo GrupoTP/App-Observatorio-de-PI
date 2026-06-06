@@ -19,9 +19,10 @@ $grade = $project['grade'] ?? null;
         </div>
         <div class="activity-card__status">
             <?php if ($isEvaluated && $grade !== null): ?>
+                <?php $conceito = nota_para_conceito((float) $grade); ?>
                 <span class="activity-status-badge activity-status-badge--evaluated">
                     <?= lucide_tag('circle-check-big', 'activity-status-badge__icon') ?>
-                    Avaliado - Nota <?= e((string) $grade) ?>
+                    Avaliado — <?= e($conceito['code']) ?>
                 </span>
             <?php else: ?>
                 <span class="activity-status-badge activity-status-badge--pending">

@@ -8,7 +8,7 @@
 $status = projeto_status_meta((string) ($project['situacao_projeto'] ?? ''));
 $grade = $project['grade'] ?? null;
 $isEvaluated = ($project['situacao_projeto'] ?? '') === 'avaliado' && $grade !== null;
-$mencao = $isEvaluated ? nota_mencao_info((float) $grade) : null;
+$conceito = $isEvaluated ? nota_para_conceito((float) $grade) : null;
 ?>
 <article class="app-project-card app-project-card--<?= e($status['modifier']) ?>"
          data-project-card
@@ -41,22 +41,11 @@ $mencao = $isEvaluated ? nota_mencao_info((float) $grade) : null;
             <?php endif; ?>
         </div>
 
-        <?php if ($isEvaluated && $mencao !== null): ?>
+        <?php if ($isEvaluated && $conceito !== null): ?>
             <div class="app-project-grade">
-                <div class="app-project-grade__score-row">
-                    <span class="app-project-grade__label">Nota Final:</span>
-                    <div class="app-project-grade__score">
-                        <span class="app-project-grade__value"><?= e(number_format((float) $grade, 1, '.', '')) ?></span>
-                        <span class="app-project-grade__max">de 10.0</span>
-                    </div>
-                </div>
-                <div class="app-project-grade__mencao">
-                    <span class="app-project-grade__mencao-label">Menção:</span>
-                    <span class="app-mencao-badge app-mencao-badge--<?= e($mencao['modifier']) ?>">
-                        <span class="app-mencao-badge__code"><?= e($mencao['code']) ?></span>
-                        <span class="app-mencao-badge__sep">-</span>
-                        <span><?= e($mencao['label']) ?></span>
-                    </span>
+                <div class="app-project-grade__conceito-row">
+                    <span class="app-project-grade__label">Conceito final:</span>
+                    <?php require dirname(__DIR__) . '/partials/app-conceito-badge.php'; ?>
                 </div>
             </div>
         <?php endif; ?>

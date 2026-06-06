@@ -11,9 +11,15 @@
         <?= csrf_field() ?>
         <div class="card"><div class="card-body">
             <?php foreach ($criteria as $c): ?>
+                <?php $fieldName = 'criterio_' . $c['nome']; ?>
                 <div class="mb-3">
-                    <label class="form-label"><?= e($c['nome']) ?> (0–10)</label>
-                    <input type="number" name="criterio_<?= e($c['nome']) ?>" class="form-control" min="0" max="10" step="0.5" required>
+                    <label class="form-label" for="<?= e($fieldName) ?>">
+                        <?= e($c['nome']) ?> <span class="text-senac-error">*</span>
+                    </label>
+                    <?php
+                    $fieldId = $fieldName;
+                    require dirname(__DIR__) . '/partials/app-conceito-select.php';
+                    ?>
                 </div>
             <?php endforeach; ?>
             <div class="mb-3">

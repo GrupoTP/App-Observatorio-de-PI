@@ -58,7 +58,7 @@ $panelTitle = $isAdmin ? 'Painel Administrativo' : 'Painel do Professor';
             <div class="admin-info-box mb-4 mb-md-5">
                 <h2 class="admin-info-box__title">Central de Avaliações</h2>
                 <p class="admin-info-box__text mb-0">
-                    Use <strong>Gerenciar Alunos</strong> para avaliar alunos individualmente com notas e feedbacks.
+                    Use <strong>Gerenciar Alunos</strong> para avaliar alunos individualmente com conceitos e feedbacks.
                     Use <strong>Gerenciar PI</strong> para criar grupos, definir prazos e avaliar Projetos Integradores
                     (em grupo ou individual). Todas as avaliações aparecerão na tela de Feedbacks dos alunos.
                 </p>
@@ -82,7 +82,7 @@ $panelTitle = $isAdmin ? 'Painel Administrativo' : 'Painel do Professor';
                     <div>
                         <h2 class="admin-action-card__title">Gerenciar Alunos</h2>
                         <p class="admin-action-card__desc">
-                            <?= $isAdmin ? 'Visualizar e gerenciar alunos' : 'Avaliar e atribuir notas aos alunos' ?>
+                            <?= $isAdmin ? 'Visualizar e gerenciar alunos' : 'Avaliar alunos e registrar conceitos' ?>
                         </p>
                     </div>
                     <i class="bi bi-people admin-action-card__icon" aria-hidden="true"></i>
