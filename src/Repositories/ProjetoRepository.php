@@ -186,6 +186,48 @@ final class ProjetoRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Submitter and credited students, deduplicated and sorted by display name.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function teamMembers(string $projectId): array
+    {
+        $project = $this->findById($projectId);
+        if ($project === null) {
+            return [];
+        }
+
+        $members = [];
+        $seen = [];
+
+        $submitter = (new UsuarioRepository())->findById((string) $project['id_usuario_submissor']);
+        if ($submitter !== null) {
+            $members[] = $submitter;
+            $seen[(string) $submitter['id_usuario']] = true;
+        }
+
+        foreach ($this->coauthors($projectId) as $student) {
+            $studentId = (string) $student['id_usuario'];
+            if (isset($seen[$studentId])) {
+                continue;
+            }
+
+            $members[] = $student;
+            $seen[$studentId] = true;
+        }
+
+        usort(
+            $members,
+            static fn (array $left, array $right): int => strcasecmp(
+                user_display_name($left),
+                user_display_name($right),
+            ),
+        );
+
+        return $members;
+    }
+
     /** @return list<array<string, mixed>> */
     public function portfolioPublic(string $userId): array
     {

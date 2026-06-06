@@ -1933,6 +1933,7 @@ h2.app-section-title {
     flex: 1;
     background: #e8f4fc;
     color: var(--senac-blue);
+    text-decoration: none;
 }
 
 .app-project-card__btn--view:hover {
@@ -2062,5 +2063,169 @@ h2.app-section-title {
 
 .app-project-view__row a {
     color: var(--senac-blue);
+}
+
+.app-project-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.app-project-detail__status {
+    margin: 0;
+}
+
+.app-project-detail__section {
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.app-project-detail__section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--senac-black);
+    margin-bottom: 0.75rem;
+}
+
+.app-project-detail__empty {
+    font-size: 0.875rem;
+    color: var(--senac-gray-medium);
+}
+
+.app-project-detail__students {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: 0.75rem;
+}
+
+.app-project-detail__student {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    background: #fafafa;
+}
+
+.app-project-detail__student-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    background: #e8f4fc;
+    color: var(--senac-blue);
+    flex-shrink: 0;
+}
+
+.app-project-detail__student-avatar-icon,
+.app-project-detail__student-avatar-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.app-project-detail__student-body {
+    min-width: 0;
+}
+
+.app-project-detail__student-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--senac-black);
+    word-break: break-word;
+}
+
+.app-project-detail__student-email {
+    font-size: 0.8125rem;
+    color: var(--senac-gray-medium);
+    word-break: break-word;
+}
+
+.app-project-detail__attachments {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.app-project-detail__attachment {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    background: #fafafa;
+}
+
+.app-project-detail__attachment-thumb {
+    width: 3rem;
+    height: 3rem;
+    object-fit: cover;
+    border-radius: 0.375rem;
+    flex-shrink: 0;
+}
+
+.app-project-detail__attachment-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.375rem;
+    background: #f3f4f6;
+    color: var(--senac-blue);
+    flex-shrink: 0;
+}
+
+.app-project-detail__attachment-icon-svg,
+.app-project-detail__attachment-icon-svg svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.app-project-detail__attachment-body {
+    min-width: 0;
+}
+
+.app-project-detail__attachment-name {
+    display: block;
+    font-weight: 600;
+    color: var(--senac-blue);
+    text-decoration: none;
+    word-break: break-word;
+}
+
+.app-project-detail__attachment-name:hover {
+    text-decoration: underline;
+}
+
+.app-project-detail__attachment-desc {
+    font-size: 0.875rem;
+    color: var(--senac-black);
+    margin-top: 0.25rem;
+}
+
+.app-project-detail__attachment-meta {
+    font-size: 0.8125rem;
+    color: var(--senac-gray-medium);
+    margin-top: 0.25rem;
+}
+
+.app-project-detail__feedback-meta {
+    font-size: 0.875rem;
+    color: var(--senac-gray-medium);
+}
+
+.app-project-detail__feedback-text {
+    color: var(--senac-black);
+    line-height: 1.5;
 }
 

@@ -520,11 +520,10 @@ function bindFileUploadZone(zone) {
 })();
 
 (function () {
-    const viewModal = document.getElementById('project-view-modal');
     const deleteModal = document.getElementById('project-delete-modal');
     const deleteForm = document.getElementById('project-delete-form');
 
-    if (!viewModal && !deleteModal) {
+    if (!deleteModal) {
         return;
     }
 
@@ -559,49 +558,9 @@ function bindFileUploadZone(zone) {
             return;
         }
 
-        if (!viewModal?.hidden) {
-            closeModal(viewModal);
-        }
-
-        if (!deleteModal?.hidden) {
+        if (!deleteModal.hidden) {
             closeModal(deleteModal);
         }
-    });
-
-    document.querySelectorAll('[data-project-view]').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const card = button.closest('[data-project-card]');
-            if (!card || !viewModal) {
-                return;
-            }
-
-            const title = card.dataset.projectTitle || '';
-            const repoUrl = card.dataset.projectRepo || '';
-
-            viewModal.querySelector('#project-view-title').textContent = title;
-            viewModal.querySelector('[data-project-view-turma]').textContent = card.dataset.projectTurma || '—';
-            viewModal.querySelector('[data-project-view-descricao]').textContent = card.dataset.projectDescricao || '—';
-            viewModal.querySelector('[data-project-view-tecnologias]').textContent = card.dataset.projectTecnologias || '—';
-            viewModal.querySelector('[data-project-view-submitted]').textContent = card.dataset.projectSubmitted || '—';
-            viewModal.querySelector('[data-project-view-prazo]').textContent = card.dataset.projectPrazo || '—';
-
-            const repoLink = viewModal.querySelector('[data-project-view-repo]');
-            if (repoUrl) {
-                repoLink.href = repoUrl;
-                repoLink.textContent = repoUrl;
-                repoLink.classList.remove('d-none');
-            } else {
-                repoLink.href = '#';
-                repoLink.textContent = '—';
-            }
-
-            const editLink = viewModal.querySelector('[data-project-view-edit]');
-            if (editLink && card.dataset.projectId) {
-                editLink.href = '/projetos/' + encodeURIComponent(card.dataset.projectId) + '/editar';
-            }
-
-            openModal(viewModal);
-        });
     });
 
     document.querySelectorAll('[data-project-delete]').forEach(function (button) {

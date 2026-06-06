@@ -47,6 +47,54 @@ final class ProjetosController extends Controller
         ]);
     }
 
+    public function show(Request $request, array $params): void
+    {
+        $userId = SessionAuth::userId() ?? '';
+        $id = $params['id'] ?? '';
+        $service = new ProjetoService();
+        $repo = new ProjetoRepository();
+
+        if (!$service->canAlunoAccess($id, $userId)) {
+            Flash::error('Projeto não encontrado.');
+            redirect('/projetos');
+        }
+
+        $project = $repo->findById($id);
+        if ($project === null) {
+            Flash::error('Projeto não encontrado.');
+            redirect('/projetos');
+        }
+
+        $feedbackRepo = new FeedbackRepository();
+        $feedback = $feedbackRepo->findByProject($id);
+        $grade = $feedbackRepo->averageGradeForProject($id, $feedback);
+        $conceito = $grade !== null ? nota_para_conceito($grade) : null;
+
+        $attachments = (new AnexoRepository())->forProject($id);
+        $submittedAt = null;
+        if ($attachments !== []) {
+            $dates = array_column($attachments, 'data_envio');
+            sort($dates);
+            $submittedAt = $dates[0] ?? null;
+        }
+
+        if ($feedback !== null) {
+            $feedback['rubrica'] = $feedbackRepo->rubricaForFeedback((int) $feedback['id_feedback']);
+        }
+
+        $this->render('aluno/projeto-detalhes', [
+            'headerTitle' => 'Detalhes do Projeto',
+            'pageTitle' => $project['titulo'] ?? 'Detalhes do Projeto',
+            'project' => $project,
+            'students' => $repo->teamMembers($id),
+            'attachments' => $attachments,
+            'feedback' => $feedback,
+            'conceito' => $conceito,
+            'submittedAt' => $submittedAt,
+            'isOwner' => $service->isOwner($id, $userId),
+        ]);
+    }
+
     public function edit(Request $request, array $params): void
     {
         $userId = SessionAuth::userId() ?? '';

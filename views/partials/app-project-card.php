@@ -61,10 +61,11 @@ $conceito = $isEvaluated ? nota_para_conceito((float) $grade) : null;
     </div>
 
     <div class="app-project-card__actions">
-        <button type="button" class="app-project-card__btn app-project-card__btn--view" data-project-view>
+        <a href="/projetos/<?= e($project['id_projeto']) ?>"
+           class="app-project-card__btn app-project-card__btn--view">
             <?= lucide_tag('eye', 'app-project-card__btn-icon') ?>
             <span>Ver</span>
-        </button>
+        </a>
         <a href="/projetos/<?= e($project['id_projeto']) ?>/editar"
            class="app-project-card__btn app-project-card__btn--edit">
             <?= lucide_tag('pencil', 'app-project-card__btn-icon') ?>

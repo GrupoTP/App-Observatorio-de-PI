@@ -37,6 +37,7 @@ $router->get('/dashboard', [$dash, 'index'], ['auth', 'aluno']);
 
 $projetos = new ProjetosController();
 $router->get('/projetos', [$projetos, 'index'], ['auth', 'aluno']);
+$router->get('/projetos/{id}', [$projetos, 'show'], ['auth', 'aluno']);
 $router->get('/projetos/{id}/editar', [$projetos, 'edit'], ['auth', 'aluno']);
 $router->post('/projetos/{id}/editar', [$projetos, 'update'], ['auth', 'aluno']);
 $router->post('/projetos/{id}/excluir', [$projetos, 'destroy'], ['auth', 'aluno']);

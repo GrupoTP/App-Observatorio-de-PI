@@ -54,43 +54,6 @@
     </div>
 </div>
 
-<div class="app-modal" id="project-view-modal" hidden aria-hidden="true">
-    <div class="app-modal__backdrop" data-modal-close></div>
-    <div class="app-modal__dialog app-modal__dialog--wide" role="dialog" aria-modal="true" aria-labelledby="project-view-title">
-        <h2 class="app-modal__title" id="project-view-title"></h2>
-        <dl class="app-project-view">
-            <div class="app-project-view__row">
-                <dt>Turma</dt>
-                <dd data-project-view-turma></dd>
-            </div>
-            <div class="app-project-view__row">
-                <dt>Descrição</dt>
-                <dd data-project-view-descricao></dd>
-            </div>
-            <div class="app-project-view__row">
-                <dt>Tecnologias</dt>
-                <dd data-project-view-tecnologias></dd>
-            </div>
-            <div class="app-project-view__row">
-                <dt>Repositório Git</dt>
-                <dd><a href="#" target="_blank" rel="noopener" data-project-view-repo></a></dd>
-            </div>
-            <div class="app-project-view__row">
-                <dt>Data envio</dt>
-                <dd data-project-view-submitted></dd>
-            </div>
-            <div class="app-project-view__row">
-                <dt>Prazo</dt>
-                <dd data-project-view-prazo></dd>
-            </div>
-        </dl>
-        <div class="app-modal__actions">
-            <button type="button" class="app-action-btn app-action-btn--secondary" data-modal-close>Fechar</button>
-            <a href="#" class="app-action-btn app-action-btn--primary" data-project-view-edit>Editar projeto</a>
-        </div>
-    </div>
-</div>
-
 <div class="app-modal" id="project-delete-modal" hidden aria-hidden="true">
     <div class="app-modal__backdrop" data-modal-close></div>
     <div class="app-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="project-delete-title">
