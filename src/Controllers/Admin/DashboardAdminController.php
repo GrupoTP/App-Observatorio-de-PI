@@ -21,10 +21,17 @@ final class DashboardAdminController extends Controller
         $projetos = new ProjetoRepository();
         $usuarios = new UsuarioRepository();
         $all = $projetos->allForAdmin();
+        $isAdmin = \App\Auth\SessionAuth::isAdmin();
+        $user = $usuarios->findById(\App\Auth\SessionAuth::userId() ?? '') ?? [];
+        $userName = user_display_name($user);
+        if (\App\Auth\SessionAuth::isProfessor() && !$isAdmin) {
+            $userName = 'Prof. ' . $userName;
+        }
 
         $this->render('admin/dashboard', [
-            'headerTitle' => \App\Auth\SessionAuth::isAdmin() ? 'Painel Admin' : 'Painel Professor',
-            'pageTitle' => 'Dashboard Administrativo',
+            'headerTitle' => $isAdmin ? 'Painel Administrativo' : 'Painel do Professor',
+            'pageTitle' => $isAdmin ? 'Painel Administrativo' : 'Painel do Professor',
+            'userName' => $userName,
             'totalProjects' => count($all),
             'pending' => count(array_filter($all, static fn ($p) => $p['situacao_projeto'] === 'enviado')),
             'evaluated' => count(array_filter($all, static fn ($p) => $p['situacao_projeto'] === 'avaliado')),

@@ -94,6 +94,26 @@ function situacao_badge_class(string $situacao): string
     };
 }
 
+function admin_situacao_label(string $situacao): string
+{
+    return match ($situacao) {
+        'avaliado' => 'Avaliado',
+        'enviado' => 'Pendente',
+        'em-correcao' => 'Em Correção',
+        default => situacao_label($situacao),
+    };
+}
+
+function admin_situacao_badge_class(string $situacao): string
+{
+    return match ($situacao) {
+        'avaliado' => 'admin-status-badge--success',
+        'enviado' => 'admin-status-badge--warning',
+        'em-correcao' => 'admin-status-badge--info',
+        default => 'admin-status-badge--muted',
+    };
+}
+
 function user_display_name(?array $user): string
 {
     if ($user === null) {
@@ -106,6 +126,24 @@ function user_display_name(?array $user): string
     }
 
     return trim(($user['nome_civil_nome'] ?? '') . ' ' . ($user['nome_civil_sobrenome'] ?? ''));
+}
+
+function lucide_tag(string $name, string $class = ''): string
+{
+    $classAttr = trim($class);
+
+    return sprintf(
+        '<i data-lucide="%s"%s aria-hidden="true"></i>',
+        e($name),
+        $classAttr !== '' ? ' class="' . e($classAttr) . '"' : ''
+    );
+}
+
+function asset_version(string $relativePath): string
+{
+    $path = dirname(__DIR__) . '/public/' . ltrim($relativePath, '/');
+
+    return is_file($path) ? (string) filemtime($path) : (string) time();
 }
 
 function csrf_field(): string

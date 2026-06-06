@@ -7,23 +7,30 @@
 use App\Auth\SessionAuth;
 
 $headerTitle = $headerTitle ?? 'Observatório PI';
-$isStaff = SessionAuth::isAdmin() || SessionAuth::isProfessor();
 ?>
-<header class="app-header d-flex align-items-center justify-content-between px-3 px-md-4">
-    <div class="d-flex align-items-center gap-2">
+<header class="app-header">
+    <div class="app-header__start">
         <button type="button" class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileMenuPanel">
-            <i class="bi bi-list fs-3" id="menuIconOpen"></i>
-            <i class="bi bi-x-lg fs-3 d-none" id="menuIconClose"></i>
+            <span class="menu-toggle__icon-wrap" id="menuIconOpen">
+                <?= lucide_tag('menu', 'menu-toggle__icon') ?>
+            </span>
+            <span class="menu-toggle__icon-wrap d-none" id="menuIconClose">
+                <?= lucide_tag('x', 'menu-toggle__icon') ?>
+            </span>
         </button>
-        <div class="d-flex align-items-center gap-2">
-            <span class="logo-box">SENAC</span>
-            <div>
-                <div class="fw-bold"><?= e($headerTitle) ?></div>
-                <?php if ($isStaff): ?>
-                <small class="text-senac-yellow">Painel <?= SessionAuth::isAdmin() ? 'Admin' : 'Professor' ?></small>
+        <div class="app-header__brand">
+            <div class="app-header__logo-wrap">
+                <img src="/assets/img/senac-logo.png" alt="Faculdade Senac" class="app-header__logo" width="80" height="40">
+            </div>
+            <div class="app-header__titles">
+                <span class="app-header__title"><?= e($headerTitle) ?></span>
+                <?php if (SessionAuth::isAdmin()): ?>
+                    <span class="app-header__badge d-none d-md-inline">Painel Admin</span>
+                <?php elseif (SessionAuth::isProfessor()): ?>
+                    <span class="app-header__badge d-none d-md-inline">Painel Professor</span>
                 <?php endif; ?>
             </div>
         </div>
     </div>
-    <div style="width:48px"></div>
+    <div class="app-header__spacer" aria-hidden="true"></div>
 </header>

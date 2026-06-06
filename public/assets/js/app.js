@@ -2,6 +2,28 @@
  * Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved.
  */
 
+function initLucideIcons(root) {
+    if (!window.lucide) {
+        return;
+    }
+
+    window.lucide.createIcons({
+        attrs: {
+            'stroke-width': 2,
+        },
+        nameAttr: 'data-lucide',
+        root: root || document,
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+        initLucideIcons();
+    });
+} else {
+    initLucideIcons();
+}
+
 (function () {
     const toggle = document.getElementById('menuToggle');
     const overlay = document.getElementById('mobileMenuOverlay');
@@ -17,12 +39,15 @@
     function openMenu() {
         overlay.hidden = false;
         panel.hidden = false;
+        overlay.removeAttribute('aria-hidden');
+        panel.removeAttribute('aria-hidden');
         overlay.classList.add('show');
         panel.classList.add('show');
         toggle.setAttribute('aria-expanded', 'true');
         toggle.setAttribute('aria-label', 'Fechar menu');
         iconOpen?.classList.add('d-none');
         iconClose?.classList.remove('d-none');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeMenu() {
@@ -32,11 +57,17 @@
         toggle.setAttribute('aria-label', 'Abrir menu');
         iconOpen?.classList.remove('d-none');
         iconClose?.classList.add('d-none');
+        document.body.style.overflow = '';
         setTimeout(function () {
             overlay.hidden = true;
             panel.hidden = true;
+            overlay.setAttribute('aria-hidden', 'true');
+            panel.setAttribute('aria-hidden', 'true');
         }, 250);
     }
+
+    overlay.setAttribute('aria-hidden', 'true');
+    panel.setAttribute('aria-hidden', 'true');
 
     toggle.addEventListener('click', function () {
         if (panel.classList.contains('show')) {

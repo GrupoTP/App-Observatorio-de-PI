@@ -34,10 +34,11 @@ final class Database
         }
 
         $dsn = sprintf(
-            'mysql:host=%s;port=%d;dbname=%s',
+            'mysql:host=%s;port=%d;dbname=%s;charset=%s',
             $host,
             $port,
-            $name
+            $name,
+            $charset
         );
 
         try {

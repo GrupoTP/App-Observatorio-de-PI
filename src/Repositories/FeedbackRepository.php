@@ -48,6 +48,26 @@ final class FeedbackRepository
         return $row ?: null;
     }
 
+    /** @param array<string, mixed>|null $feedback */
+    public function averageGradeForProject(string $projectId, ?array $feedback = null): ?float
+    {
+        $feedback ??= $this->findByProject($projectId);
+        if ($feedback === null) {
+            return null;
+        }
+
+        $scores = array_map(
+            static fn (array $row): float => (float) $row['conceito'],
+            $this->rubricaForFeedback((int) $feedback['id_feedback'])
+        );
+
+        if ($scores === []) {
+            return null;
+        }
+
+        return round(array_sum($scores) / count($scores), 1);
+    }
+
     /** @return list<array<string, mixed>> */
     public function rubricaForFeedback(int $feedbackId): array
     {

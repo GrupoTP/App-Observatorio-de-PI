@@ -2,6 +2,8 @@
 
 -- Development seed data (demo logins: aluno@aluno, professor@professor, admin@admin — password: senac123)
 
+SET NAMES utf8mb4;
+
 SET @pwd_salt = 'dev_seed_salt_2026';
 SET @pwd_hash = SHA2(CONCAT('senac123', @pwd_salt), 256);
 

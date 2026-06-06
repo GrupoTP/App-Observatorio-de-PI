@@ -27,6 +27,7 @@ services:
   db:
     image: mysql:8.4
     container_name: opi-db
+    command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     ports:
       - "${DB_PORT:-3306}:3306"
     environment:
@@ -36,6 +37,7 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:-opi_secret}
     volumes:
       - db_data:/var/lib/mysql
+      - ./sql/schema/00_charset.sql:/docker-entrypoint-initdb.d/00_charset.sql:ro
       - ./sql/schema/01_usuario.sql:/docker-entrypoint-initdb.d/01_usuario.sql:ro
       - ./sql/schema/02_curso_turma.sql:/docker-entrypoint-initdb.d/02_curso_turma.sql:ro
       - ./sql/schema/03_matricula_alocacao.sql:/docker-entrypoint-initdb.d/03_matricula_alocacao.sql:ro
