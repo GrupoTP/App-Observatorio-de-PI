@@ -9,7 +9,7 @@ CREATE TABLE projeto (
     id_usuario_coordenador_revisor VARCHAR(36) NULL,
     titulo VARCHAR(255) NOT NULL,
     descricao TEXT NOT NULL,
-    link_github VARCHAR(512) NOT NULL,
+    link_repo_git VARCHAR(512) NOT NULL,
     tecnologias TEXT NOT NULL,
     publico TINYINT(1) NOT NULL DEFAULT 0,
     situacao_projeto VARCHAR(50) NOT NULL,

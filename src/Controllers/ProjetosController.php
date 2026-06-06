@@ -64,11 +64,11 @@ final class ProjetosController extends Controller
             (new ProjetoService())->updateForAluno($id, $userId, [
                 'titulo' => $request->input('titulo', '') ?? '',
                 'descricao' => $request->input('descricao', '') ?? '',
-                'link_github' => $request->input('link_github', '') ?? '',
+                'link_repo_git' => $request->input('link_repo_git', '') ?? '',
                 'tecnologias' => $request->input('tecnologias', '') ?? '',
                 'publico' => $request->input('publico'),
                 'nome_grupo' => $request->input('nome_grupo'),
-            ], $request->file('arquivo'));
+            ], $request->files('anexo_arquivo'), $request->inputList('anexo_descricao'));
             Flash::success('Projeto atualizado com sucesso.');
         } catch (\Throwable $e) {
             Flash::error($e->getMessage());
@@ -86,7 +86,7 @@ final class ProjetosController extends Controller
 
         if ($service->isOwner($id, $userId)) {
             (new ProjetoRepository())->softDelete($id);
-            Flash::success('Projeto excluído.');
+            Flash::success('Projeto removido da sua lista.');
         } else {
             Flash::error('Sem permissão.');
         }

@@ -20,13 +20,12 @@ final class SubmeterController extends Controller
     public function create(Request $request, array $params = []): void
     {
         $userId = SessionAuth::userId() ?? '';
-        $turma = (new TurmaRepository())->activeTurmaForAluno($userId);
+        $turmas = (new TurmaRepository())->activeTurmasForAluno($userId);
 
         $this->render('aluno/submeter', [
             'headerTitle' => 'Submeter Projeto',
             'pageTitle' => 'Submeter Novo Projeto',
-            'turma' => $turma,
-            'turmaLabel' => turma_display_label($turma),
+            'turmas' => $turmas,
         ]);
     }
 
@@ -39,11 +38,12 @@ final class SubmeterController extends Controller
             (new ProjetoService())->createForAluno($userId, [
                 'titulo' => $request->input('titulo', '') ?? '',
                 'descricao' => $request->input('descricao', '') ?? '',
-                'link_github' => $request->input('link_github', '') ?? '',
+                'cod_turma' => $request->input('cod_turma', '') ?? '',
+                'link_repo_git' => $request->input('link_repo_git', '') ?? '',
                 'tecnologias' => $request->input('tecnologias', '') ?? '',
                 'publico' => $request->input('publico'),
                 'nome_grupo' => $request->input('nome_grupo'),
-            ], $request->file('arquivo'));
+            ], $request->files('anexo_arquivo'), $request->inputList('anexo_descricao'));
             Flash::success('Projeto submetido com sucesso!');
         } catch (\Throwable $e) {
             flash_old_input($request->allPost());

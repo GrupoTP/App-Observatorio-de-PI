@@ -43,8 +43,8 @@
                 <div class="form-text">Segure Ctrl para selecionar vários</div></div>
             <div class="col-12"><label class="form-label">Descrição</label>
                 <textarea name="descricao" class="form-control" rows="3"><?= e($p['descricao'] ?? '') ?></textarea></div>
-            <div class="col-md-6"><label class="form-label">GitHub</label>
-                <input name="link_github" class="form-control" value="<?= e($p['link_github'] ?? '') ?>"></div>
+            <div class="col-md-6"><label class="form-label">Repositório Git</label>
+                <input name="link_repo_git" class="form-control" value="<?= e($p['link_repo_git'] ?? '') ?>"></div>
             <div class="col-md-6"><label class="form-label">Status</label>
                 <select name="situacao_projeto" class="form-select">
                     <option value="em-andamento">Em andamento</option>

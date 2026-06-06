@@ -41,15 +41,56 @@ final class Request
 
     public function file(string $key): ?array
     {
+        $files = $this->files($key);
+
+        return $files[0] ?? null;
+    }
+
+    /**
+     * @return list<array{name: string, type: string, tmp_name: string, error: int, size: int}>
+     */
+    public function files(string $key): array
+    {
         if (!isset($_FILES[$key]) || !is_array($_FILES[$key])) {
-            return null;
+            return [];
         }
 
-        if (($_FILES[$key]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
-            return null;
+        $upload = $_FILES[$key];
+
+        if (!is_array($upload['name'] ?? null)) {
+            if (($upload['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+                return [];
+            }
+
+            return [$upload];
         }
 
-        return $_FILES[$key];
+        $normalized = [];
+        foreach ($upload['name'] as $index => $name) {
+            if (($upload['error'][$index] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+                continue;
+            }
+
+            $normalized[] = [
+                'name' => (string) $name,
+                'type' => (string) ($upload['type'][$index] ?? ''),
+                'tmp_name' => (string) ($upload['tmp_name'][$index] ?? ''),
+                'error' => (int) ($upload['error'][$index] ?? UPLOAD_ERR_NO_FILE),
+                'size' => (int) ($upload['size'][$index] ?? 0),
+            ];
+        }
+
+        return $normalized;
+    }
+
+    /** @return list<string> */
+    public function inputList(string $key): array
+    {
+        if (!isset($_POST[$key]) || !is_array($_POST[$key])) {
+            return [];
+        }
+
+        return array_map(static fn ($value): string => trim((string) $value), $_POST[$key]);
     }
 
     public function validateCsrf(): bool

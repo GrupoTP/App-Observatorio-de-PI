@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use App\Controllers\AnexoController;
 use App\Controllers\Admin\AlunosController;
 use App\Controllers\Admin\DashboardAdminController;
 use App\Controllers\Admin\PiController;
@@ -43,6 +44,10 @@ $router->post('/projetos/{id}/excluir', [$projetos, 'destroy'], ['auth', 'aluno'
 $submeter = new SubmeterController();
 $router->get('/submeter', [$submeter, 'create'], ['auth', 'aluno']);
 $router->post('/submeter', [$submeter, 'store'], ['auth', 'aluno']);
+
+$anexo = new AnexoController();
+$router->get('/anexos/{id}/download', [$anexo, 'download'], ['auth']);
+$router->get('/anexos/{id}/miniatura', [$anexo, 'thumbnail'], ['auth']);
 
 $router->get('/portfolio', [new PortfolioController(), 'index'], ['auth', 'aluno']);
 $router->get('/feedbacks', [new FeedbacksController(), 'index'], ['auth', 'aluno']);

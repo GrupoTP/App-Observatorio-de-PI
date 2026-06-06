@@ -8,14 +8,15 @@
         require dirname(__DIR__) . '/partials/app-page-heading.php';
         ?>
 
-        <form method="post" action="/submeter" enctype="multipart/form-data" class="app-form-card app-form-stack" novalidate>
+        <form method="post" action="/submeter" enctype="multipart/form-data" class="app-form-card app-form-stack"
+              data-submeter-form autocomplete="off">
             <?= csrf_field() ?>
 
             <div class="app-field">
                 <label for="titulo" class="app-field__label">
                     Título do projeto <span class="text-senac-error">*</span>
                 </label>
-                <input type="text" id="titulo" name="titulo" class="app-field__input" required
+                <input type="text" id="titulo" name="titulo" class="app-field__input" required autocomplete="off"
                        placeholder="Digite o título do projeto" value="<?= old('titulo') ?>">
             </div>
 
@@ -23,7 +24,7 @@
                 <label for="descricao" class="app-field__label">
                     Descrição resumida <span class="text-senac-error">*</span>
                 </label>
-                <textarea id="descricao" name="descricao" class="app-field__textarea" rows="5" required
+                <textarea id="descricao" name="descricao" class="app-field__textarea" rows="5" required autocomplete="off"
                           maxlength="500" placeholder="Descreva o projeto em até 500 caracteres"
                           data-char-count="descricao-count"><?= old('descricao') ?></textarea>
                 <div class="app-field__meta">
@@ -34,14 +35,27 @@
                 </div>
             </div>
 
+            <?php $turmas = $turmas ?? []; ?>
             <div class="app-field">
-                <label for="turma" class="app-field__label">
+                <label for="cod_turma" class="app-field__label">
                     Turma <span class="text-senac-error">*</span>
                 </label>
-                <select id="turma" class="app-field__input" disabled aria-readonly="true">
-                    <option selected><?= e($turmaLabel ?? '—') ?></option>
+                <select id="cod_turma" name="cod_turma" class="app-field__input" required autocomplete="off"<?= $turmas === [] ? ' disabled' : '' ?>>
+                    <?php if ($turmas === []): ?>
+                        <option value="">Nenhuma turma disponível</option>
+                    <?php else: ?>
+                        <option value="" disabled<?= old('cod_turma') === '' ? ' selected' : '' ?>>
+                            Selecione a turma
+                        </option>
+                        <?php foreach ($turmas as $turma): ?>
+                            <option value="<?= e($turma['cod_turma']) ?>"
+                                <?= old('cod_turma', count($turmas) === 1 ? (string) $turma['cod_turma'] : '') === (string) $turma['cod_turma'] ? 'selected' : '' ?>>
+                                <?= e(turma_display_label($turma)) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
-                <?php if ($turma === null): ?>
+                <?php if ($turmas === []): ?>
                     <p class="app-field__helper text-senac-error mb-0" role="alert">
                         Nenhuma turma ativa encontrada para sua matrícula.
                     </p>
@@ -49,19 +63,19 @@
             </div>
 
             <div class="app-field">
-                <label for="link_github" class="app-field__label">
-                    Link do repositório GitHub <span class="text-senac-error">*</span>
+                <label for="link_repo_git" class="app-field__label">
+                    Link do repositório Git <span class="text-senac-error">*</span>
                 </label>
-                <input type="url" id="link_github" name="link_github" class="app-field__input" required
-                       placeholder="https://github.com/usuario/projeto" value="<?= old('link_github') ?>">
-                <p class="app-field__helper mb-0">URL completa do repositório do projeto no GitHub</p>
+                <input type="url" id="link_repo_git" name="link_repo_git" class="app-field__input" required autocomplete="off"
+                       placeholder="https://github.com/usuario/projeto" value="<?= old('link_repo_git') ?>">
+                <p class="app-field__helper mb-0">URL completa do repositório Git do projeto</p>
             </div>
 
             <div class="app-field">
                 <label for="tecnologias" class="app-field__label">
                     Tecnologias utilizadas <span class="text-senac-error">*</span>
                 </label>
-                <input type="text" id="tecnologias" name="tecnologias" class="app-field__input" required
+                <input type="text" id="tecnologias" name="tecnologias" class="app-field__input" required autocomplete="off"
                        placeholder="Ex: Python, Django, PostgreSQL, React" value="<?= old('tecnologias') ?>">
                 <p class="app-field__helper mb-0">
                     Liste as principais tecnologias, frameworks e ferramentas utilizadas
@@ -69,24 +83,14 @@
             </div>
 
             <div class="app-field">
-                <label class="app-field__label" for="arquivo">
-                    Anexo do projeto <span class="text-senac-error">*</span>
-                </label>
-                <div class="app-file-upload" data-file-upload>
-                    <input type="file" name="arquivo" id="arquivo" class="app-file-upload__input" required
-                           accept=".pdf,.zip,.png,.jpg,.jpeg" data-file-input>
-                    <label for="arquivo" class="app-file-upload__label">
-                        <?= lucide_tag('upload', 'app-file-upload__icon') ?>
-                        <span class="app-file-upload__placeholder" data-file-placeholder>
-                            <span class="app-file-upload__title">Arraste ou clique para anexar</span>
-                            <span class="app-file-upload__hint">Formatos: PDF, ZIP, PNG ou JPG (máx. 10 MB)</span>
-                        </span>
-                        <span class="app-file-upload__selected d-none" data-file-selected>
-                            <span class="app-file-upload__title" data-file-name></span>
-                            <span class="app-file-upload__hint" data-file-size></span>
-                        </span>
-                    </label>
-                </div>
+                <span class="app-field__label d-block">
+                    Anexos do projeto <span class="text-senac-error">*</span>
+                </span>
+                <?php
+                $attachmentRequired = true;
+                $allowMultiple = true;
+                require dirname(__DIR__) . '/partials/app-attachment-rows.php';
+                ?>
             </div>
 
             <div class="app-field app-field--checkbox">
@@ -99,7 +103,7 @@
 
             <div class="app-form-actions">
                 <a href="/dashboard" class="app-action-btn app-action-btn--secondary">Cancelar</a>
-                <button type="submit" class="app-action-btn app-action-btn--primary"<?= $turma === null ? ' disabled' : '' ?>>
+                <button type="submit" class="app-action-btn app-action-btn--primary"<?= $turmas === [] ? ' disabled' : '' ?>>
                     Enviar projeto
                 </button>
             </div>

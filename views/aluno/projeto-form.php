@@ -25,16 +25,20 @@
                     <textarea name="descricao" class="form-control" rows="4" required><?= e($p['descricao']) ?></textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Link GitHub</label>
-                    <input type="url" name="link_github" class="form-control" value="<?= e($p['link_github']) ?>">
+                    <label class="form-label">Link do repositório Git</label>
+                    <input type="url" name="link_repo_git" class="form-control" value="<?= e($p['link_repo_git']) ?>">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Tecnologias</label>
                     <input type="text" name="tecnologias" class="form-control" value="<?= e($p['tecnologias']) ?>">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Novo anexo (opcional)</label>
-                    <input type="file" name="arquivo" class="form-control" accept=".pdf,.zip,.png,.jpg,.jpeg">
+                    <label class="form-label">Novos anexos (opcional)</label>
+                    <?php
+                    $attachmentRequired = false;
+                    $allowMultiple = true;
+                    require dirname(__DIR__) . '/partials/app-attachment-rows.php';
+                    ?>
                 </div>
                 <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" name="publico" value="1" id="publico" <?= !empty($p['publico']) ? 'checked' : '' ?>>

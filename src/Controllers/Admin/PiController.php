@@ -225,7 +225,7 @@ final class PiController extends Controller
                 'titulo' => $request->input('titulo', '') ?? '',
                 'nome_grupo' => $request->input('nome_grupo', '') ?? '',
                 'descricao' => $request->input('descricao', '') ?? '',
-                'link_github' => $request->input('link_github', '') ?? '',
+                'link_repo_git' => $request->input('link_repo_git', '') ?? '',
                 'tecnologias' => $request->input('tecnologias', '') ?? '',
                 'situacao_projeto' => $request->input('situacao_projeto', 'em-andamento') ?? 'em-andamento',
                 'prazo_especial' => $request->input('prazo_especial'),

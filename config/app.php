@@ -20,4 +20,8 @@ return [
         'password' => getenv('DB_PASSWORD') ?: 'opi_secret',
         'charset' => 'utf8mb4',
     ],
+    'upload' => [
+        'max_bytes' => (int) (getenv('UPLOAD_MAX_BYTES') ?: 1073741824),
+        'storage_path' => getenv('UPLOAD_STORAGE_PATH') ?: dirname(__DIR__) . '/storage/attachments',
+    ],
 ];

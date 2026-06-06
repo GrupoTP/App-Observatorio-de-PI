@@ -2,8 +2,8 @@
 
 .env
 vendor/
-public/assets/uploads/*
-!public/assets/uploads/.gitkeep
+storage/attachments/*
+!storage/attachments/.gitkeep
 .idea/
 .vscode/
 *.log

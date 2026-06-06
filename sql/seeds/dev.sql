@@ -1,6 +1,6 @@
 -- Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved.
 
--- Development seed data (demo logins: aluno@aluno, professor@professor, admin@admin — password: senac123)
+-- Development seed data (demo logins: aluno@aluno, aluno2@aluno, professor@professor, admin@admin — password: senac123)
 
 SET NAMES utf8mb4;
 
@@ -12,7 +12,7 @@ INSERT INTO usuario (id_usuario, email_institucional, nome_civil_nome, nome_civi
 ('u-aluno-001', 'aluno@aluno', 'João', 'Silva', @pwd_hash, @pwd_salt, 1, 'joao.pessoal@email.com', '', '2099-12-31 23:59:59', NULL),
 ('u-prof-001', 'professor@professor', 'Maria', 'Santos', @pwd_hash, @pwd_salt, 1, 'maria.pessoal@email.com', '', '2099-12-31 23:59:59', NULL),
 ('u-admin-001', 'admin@admin', 'Carlos', 'Roberto', @pwd_hash, @pwd_salt, 1, 'carlos.pessoal@email.com', '', '2099-12-31 23:59:59', NULL),
-('u-aluno-002', 'ana.costa@aluno', 'Ana', 'Costa', @pwd_hash, @pwd_salt, 1, 'ana@email.com', '', '2099-12-31 23:59:59', NULL);
+('u-aluno-002', 'aluno2@aluno', 'Lucas', 'Ferreira', @pwd_hash, @pwd_salt, 1, 'lucas@email.com', '', '2099-12-31 23:59:59', NULL);
 
 INSERT INTO aluno (id_usuario, portfolio_publico, notificacoes) VALUES
 ('u-aluno-001', 1, 'email'),
@@ -23,14 +23,17 @@ INSERT INTO coordenador (id_usuario) VALUES ('u-admin-001');
 
 -- Academic structure
 INSERT INTO curso (id_curso, nome_curso, ativo) VALUES
-('curso-ads-001', 'Análise e Desenvolvimento de Sistemas', 1);
+('curso-ads-001', 'Análise e Desenvolvimento de Sistemas', 1),
+('curso-gamedev-001', 'Desenvolvimento de Jogos Digitais', 1);
 
 INSERT INTO turma (cod_turma, id_curso, nome_turma, turno, modulo, prazo_projetos, ativo) VALUES
-('turma-ads-m2', 'curso-ads-001', 'ADS 2026.1 — Turma A', 'Noturno', '2º Módulo', '2026-06-30 23:59:59', 1);
+('turma-ads-m2', 'curso-ads-001', 'ADS 2026.1 — Turma A', 'Noturno', '2º Módulo', '2026-06-30 23:59:59', 1),
+('turma-gamedev-m2', 'curso-gamedev-001', 'Game Dev 2026.1 — Turma A', 'Noturno', '2º Módulo', '2026-07-15 23:59:59', 1);
 
 INSERT INTO matricula (cod_matricula, id_usuario, cod_turma, ativo) VALUES
 ('mat-001', 'u-aluno-001', 'turma-ads-m2', 1),
-('mat-002', 'u-aluno-002', 'turma-ads-m2', 1);
+('mat-002', 'u-aluno-002', 'turma-ads-m2', 1),
+('mat-003', 'u-aluno-002', 'turma-gamedev-m2', 1);
 
 INSERT INTO alocacao (id_alocacao, id_usuario, cod_turma, ativo) VALUES
 ('aloc-001', 'u-prof-001', 'turma-ads-m2', 1),
@@ -43,10 +46,13 @@ INSERT INTO coordenador_curso (id_usuario, id_curso) VALUES
 INSERT INTO rubrica_criterio (id_criterio, cod_turma, nome, peso, ordem, ativo) VALUES
 ('rub-func', 'turma-ads-m2', 'Funcionalidade', 1.00, 1, 1),
 ('rub-doc', 'turma-ads-m2', 'Documentação', 1.00, 2, 1),
-('rub-cria', 'turma-ads-m2', 'Criatividade', 1.00, 3, 1);
+('rub-cria', 'turma-ads-m2', 'Criatividade', 1.00, 3, 1),
+('rub-gd-func', 'turma-gamedev-m2', 'Funcionalidade', 1.00, 1, 1),
+('rub-gd-doc', 'turma-gamedev-m2', 'Documentação', 1.00, 2, 1),
+('rub-gd-cria', 'turma-gamedev-m2', 'Criatividade', 1.00, 3, 1);
 
 -- Projects
-INSERT INTO projeto (id_projeto, id_usuario_submissor, cod_turma, id_usuario_coordenador_revisor, titulo, nome_grupo, descricao, link_github, tecnologias, publico, situacao_projeto, prazo_especial, ativo) VALUES
+INSERT INTO projeto (id_projeto, id_usuario_submissor, cod_turma, id_usuario_coordenador_revisor, titulo, nome_grupo, descricao, link_repo_git, tecnologias, publico, situacao_projeto, prazo_especial, ativo) VALUES
 ('proj-001', 'u-aluno-001', 'turma-ads-m2', NULL, 'Sistema de Gestão Escolar', 'Grupo Alpha', 'Plataforma web para gestão acadêmica com módulos de matrícula e notas.', 'https://github.com/example/sge', 'PHP, MySQL, Bootstrap', 1, 'enviado', '2026-06-30 23:59:59', 1),
 ('proj-002', 'u-aluno-001', 'turma-ads-m2', NULL, 'App de Delivery Sustentável', NULL, 'Aplicativo de entregas com foco em embalagens recicláveis.', 'https://github.com/example/delivery', 'React Native, Node.js', 0, 'avaliado', '2026-06-30 23:59:59', 1),
 ('proj-003', 'u-aluno-002', 'turma-ads-m2', NULL, 'E-commerce Artesanal', 'Grupo Beta', 'Loja virtual para artesãos locais.', 'https://github.com/example/artesanal', 'Vue.js, Laravel', 1, 'em-correcao', '2026-06-30 23:59:59', 1);

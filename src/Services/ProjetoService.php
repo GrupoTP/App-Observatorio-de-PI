@@ -43,12 +43,23 @@ final class ProjetoService
         return false;
     }
 
-    /** @param array<string, mixed> $input */
-    public function createForAluno(string $userId, array $input, ?array $file): string
+    /**
+     * @param array<string, mixed> $input
+     * @param list<array{name: string, type: string, tmp_name: string, error: int, size: int}> $files
+     * @param list<string> $attachmentDescriptions
+     */
+    public function createForAluno(string $userId, array $input, array $files = [], array $attachmentDescriptions = []): string
     {
-        $turma = $this->turmas->activeTurmaForAluno($userId);
+        $validated = $this->validateSubmissaoInput($input, $files, requireAttachments: true, requireTurma: true);
+
+        $codTurma = $validated['cod_turma'];
+        if (!$this->turmas->isAlunoEnrolledInTurma($userId, $codTurma)) {
+            throw new \RuntimeException('Turma inválida para sua matrícula.');
+        }
+
+        $turma = $this->turmas->findByCode($codTurma);
         if ($turma === null) {
-            throw new \RuntimeException('Nenhuma turma ativa encontrada para matrícula.');
+            throw new \RuntimeException('Turma não encontrada.');
         }
 
         $id = Uuid::v4();
@@ -56,42 +67,51 @@ final class ProjetoService
             'id' => $id,
             'submissor' => $userId,
             'turma' => $turma['cod_turma'],
-            'titulo' => $input['titulo'],
-            'grupo' => $input['nome_grupo'] ?? null,
-            'desc' => $input['descricao'],
-            'github' => $input['link_github'] ?? '',
-            'tech' => $input['tecnologias'] ?? '',
-            'publico' => !empty($input['publico']) ? 1 : 0,
+            'titulo' => $validated['titulo'],
+            'grupo' => $validated['nome_grupo'],
+            'desc' => $validated['descricao'],
+            'repo_git' => $validated['link_repo_git'],
+            'tech' => $validated['tecnologias'],
+            'publico' => $validated['publico'],
             'sit' => 'enviado',
             'prazo' => $turma['prazo_projetos'],
         ]);
 
-        if ($file !== null) {
-            $this->uploads->storeProjectFile($file, $id, $userId);
-        }
+        $this->uploads->storeProjectFiles($files, $id, $userId, $attachmentDescriptions);
 
         return $id;
     }
 
-    /** @param array<string, mixed> $input */
-    public function updateForAluno(string $projectId, string $userId, array $input, ?array $file): void
-    {
+    /**
+     * @param array<string, mixed> $input
+     * @param list<array{name: string, type: string, tmp_name: string, error: int, size: int}> $files
+     * @param list<string> $attachmentDescriptions
+     */
+    public function updateForAluno(
+        string $projectId,
+        string $userId,
+        array $input,
+        array $files = [],
+        array $attachmentDescriptions = [],
+    ): void {
         if (!$this->canAlunoAccess($projectId, $userId) || !$this->isOwner($projectId, $userId)) {
             throw new \RuntimeException('Sem permissão para editar este projeto.');
         }
 
+        $validated = $this->validateSubmissaoInput($input, $files, requireAttachments: false, requireTurma: false);
+
         $this->projetos->update($projectId, [
-            'titulo' => $input['titulo'],
-            'grupo' => $input['nome_grupo'] ?? null,
-            'desc' => $input['descricao'],
-            'github' => $input['link_github'] ?? '',
-            'tech' => $input['tecnologias'] ?? '',
-            'publico' => !empty($input['publico']) ? 1 : 0,
+            'titulo' => $validated['titulo'],
+            'grupo' => $validated['nome_grupo'],
+            'desc' => $validated['descricao'],
+            'repo_git' => $validated['link_repo_git'],
+            'tech' => $validated['tecnologias'],
+            'publico' => $validated['publico'],
             'sit' => $input['situacao_projeto'] ?? 'enviado',
         ]);
 
-        if ($file !== null) {
-            $this->uploads->storeProjectFile($file, $projectId, $userId);
+        if ($files !== []) {
+            $this->uploads->storeProjectFiles($files, $projectId, $userId, $attachmentDescriptions);
         }
     }
 
@@ -120,7 +140,7 @@ final class ProjetoService
                 'titulo' => $input['titulo'],
                 'grupo' => $input['nome_grupo'] ?? null,
                 'desc' => $input['descricao'] ?? '',
-                'github' => $input['link_github'] ?? '',
+                'repo_git' => $input['link_repo_git'] ?? '',
                 'tech' => $input['tecnologias'] ?? '',
                 'publico' => 0,
                 'sit' => $input['situacao_projeto'] ?? 'em-andamento',
@@ -131,7 +151,7 @@ final class ProjetoService
                 'titulo' => $input['titulo'],
                 'grupo' => $input['nome_grupo'] ?? null,
                 'desc' => $input['descricao'] ?? '',
-                'github' => $input['link_github'] ?? '',
+                'repo_git' => $input['link_repo_git'] ?? '',
                 'tech' => $input['tecnologias'] ?? '',
                 'publico' => 0,
                 'sit' => $input['situacao_projeto'] ?? 'em-andamento',
@@ -163,5 +183,67 @@ final class ProjetoService
         }
 
         return $count;
+    }
+
+    /**
+     * @param array<string, mixed> $input
+     * @param list<array{name: string, type: string, tmp_name: string, error: int, size: int}> $files
+     * @return array{titulo: string, descricao: string, cod_turma: string, link_repo_git: string, tecnologias: string, nome_grupo: ?string, publico: int}
+     */
+    private function validateSubmissaoInput(
+        array $input,
+        array $files,
+        bool $requireAttachments,
+        bool $requireTurma,
+    ): array {
+        $titulo = trim((string) ($input['titulo'] ?? ''));
+        if ($titulo === '') {
+            throw new \RuntimeException('Informe o título do projeto.');
+        }
+
+        $descricao = trim((string) ($input['descricao'] ?? ''));
+        if ($descricao === '') {
+            throw new \RuntimeException('Informe a descrição do projeto.');
+        }
+
+        if (mb_strlen($descricao) > 500) {
+            throw new \RuntimeException('A descrição deve ter no máximo 500 caracteres.');
+        }
+
+        $codTurma = trim((string) ($input['cod_turma'] ?? ''));
+        if ($requireTurma && $codTurma === '') {
+            throw new \RuntimeException('Selecione a turma do projeto.');
+        }
+
+        $linkRepoGit = trim((string) ($input['link_repo_git'] ?? ''));
+        if ($linkRepoGit === '') {
+            throw new \RuntimeException('Informe o link do repositório Git.');
+        }
+
+        if (filter_var($linkRepoGit, FILTER_VALIDATE_URL) === false) {
+            throw new \RuntimeException('Informe uma URL válida do repositório Git.');
+        }
+
+        $tecnologias = trim((string) ($input['tecnologias'] ?? ''));
+        if ($tecnologias === '') {
+            throw new \RuntimeException('Informe as tecnologias utilizadas.');
+        }
+
+        if ($requireAttachments && $files === []) {
+            throw new \RuntimeException('É obrigatório anexar ao menos um arquivo.');
+        }
+
+        $nomeGrupo = trim((string) ($input['nome_grupo'] ?? ''));
+        $nomeGrupo = $nomeGrupo !== '' ? $nomeGrupo : null;
+
+        return [
+            'titulo' => $titulo,
+            'descricao' => $descricao,
+            'cod_turma' => $codTurma,
+            'link_repo_git' => $linkRepoGit,
+            'tecnologias' => $tecnologias,
+            'nome_grupo' => $nomeGrupo,
+            'publico' => !empty($input['publico']) ? 1 : 0,
+        ];
     }
 }

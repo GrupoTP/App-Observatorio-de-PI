@@ -23,7 +23,8 @@ Aplicação: **http://localhost:8080** (porta configurável via `APP_PORT` no `.
 
 | E-mail | Perfil | Senha |
 |--------|--------|-------|
-| `aluno@aluno` | Aluno | `senac123` |
+| `aluno@aluno` | Aluno (ADS) | `senac123` |
+| `aluno2@aluno` | Aluno (ADS + Game Dev) | `senac123` |
 | `professor@professor` | Professor | `senac123` |
 | `admin@admin` | Administrador (+ Professor) | `senac123` |
 
@@ -64,4 +65,6 @@ Rotas equivalentes:
 
 ## Uploads
 
-Arquivos de projeto ficam em `public/assets/uploads/` (volume Docker mapeado).
+Anexos ficam em disco (`storage/attachments/`, volume Docker `attachment_data`). O banco guarda apenas os caminhos relativos em `anexo.bytes` e `anexo.miniatura`. O download passa por `/anexos/{id}/download` e `/anexos/{id}/miniatura`, com checagem de permissão antes de servir o arquivo.
+
+Limite padrão: 1 GiB por arquivo (`UPLOAD_MAX_BYTES` no `.env`; PHP em `docker/php/uploads.ini`).

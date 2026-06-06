@@ -22,7 +22,7 @@ final class FeedbackRepository
              FROM feedback f
              INNER JOIN projeto p ON p.id_projeto = f.id_projeto
              INNER JOIN usuario u ON u.id_usuario = f.id_usuario
-             WHERE f.ativo = 1 AND (p.id_usuario_submissor = :uid OR EXISTS (
+             WHERE f.ativo = 1 AND p.ativo = 1 AND (p.id_usuario_submissor = :uid OR EXISTS (
                  SELECT 1 FROM projeto_aluno_credito pac WHERE pac.id_projeto = p.id_projeto AND pac.id_usuario = :uid2
              ))
              ORDER BY f.data DESC'

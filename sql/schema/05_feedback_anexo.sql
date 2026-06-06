@@ -36,7 +36,7 @@ CREATE TABLE anexo (
     id_usuario VARCHAR(36) NOT NULL,
     nome VARCHAR(255) NOT NULL,
     data_envio DATETIME NOT NULL,
-    bytes BIGINT UNSIGNED NOT NULL,
+    bytes VARCHAR(512) NOT NULL,
     descricao TEXT NOT NULL,
     miniatura VARCHAR(512) NULL,
     ativo TINYINT(1) NOT NULL DEFAULT 1,

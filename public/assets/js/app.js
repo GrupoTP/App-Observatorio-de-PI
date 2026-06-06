@@ -16,11 +16,32 @@ function initLucideIcons(root) {
     });
 }
 
+function disableBrowserAutofillHints() {
+    document.querySelectorAll('form').forEach(function (form) {
+        form.setAttribute('autocomplete', 'off');
+    });
+
+    document.querySelectorAll('input, textarea, select').forEach(function (field) {
+        const type = (field.getAttribute('type') || '').toLowerCase();
+
+        if (type === 'hidden' || type === 'submit' || type === 'button' || type === 'reset' || type === 'file') {
+            return;
+        }
+
+        field.setAttribute('autocomplete', 'off');
+        field.setAttribute('autocorrect', 'off');
+        field.setAttribute('autocapitalize', 'off');
+        field.setAttribute('spellcheck', 'false');
+    });
+}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
+        disableBrowserAutofillHints();
         initLucideIcons();
     });
 } else {
+    disableBrowserAutofillHints();
     initLucideIcons();
 }
 
@@ -102,41 +123,269 @@ if (document.readyState === 'loading') {
 })();
 
 (function () {
-    document.querySelectorAll('[data-file-upload]').forEach(function (zone) {
-        const input = zone.querySelector('[data-file-input]');
-        const placeholder = zone.querySelector('[data-file-placeholder]');
-        const selected = zone.querySelector('[data-file-selected]');
-        const nameEl = zone.querySelector('[data-file-name]');
-        const sizeEl = zone.querySelector('[data-file-size]');
+    const form = document.querySelector('[data-submeter-form]');
+    if (!form) {
+        return;
+    }
 
-        if (!input || !placeholder || !selected) {
+    const attachmentMessageId = 'submeter-attachment-error';
+    let attachmentMessage = document.getElementById(attachmentMessageId);
+
+    if (!attachmentMessage) {
+        attachmentMessage = document.createElement('p');
+        attachmentMessage.id = attachmentMessageId;
+        attachmentMessage.className = 'app-field__helper text-senac-error mb-0 d-none';
+        attachmentMessage.setAttribute('role', 'alert');
+        attachmentMessage.textContent = 'Anexe ao menos um arquivo ao projeto.';
+        form.querySelector('[data-attachments-manager]')?.appendChild(attachmentMessage);
+    }
+
+    const hasRequiredAttachment = function () {
+        return Array.from(form.querySelectorAll('[data-file-input]')).some(function (input) {
+            return input.files && input.files.length > 0;
+        });
+    };
+
+    form.addEventListener('submit', function (event) {
+        attachmentMessage.classList.add('d-none');
+        form.querySelectorAll('.app-file-upload--invalid').forEach(function (zone) {
+            zone.classList.remove('app-file-upload--invalid');
+        });
+
+        if (!form.reportValidity()) {
+            event.preventDefault();
             return;
         }
 
-        const updateView = function () {
-            const file = input.files && input.files[0];
+        if (!hasRequiredAttachment()) {
+            event.preventDefault();
+            const firstZone = form.querySelector('[data-file-upload]');
+            firstZone?.classList.add('app-file-upload--invalid');
+            attachmentMessage.classList.remove('d-none');
+            firstZone?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
 
-            if (!file) {
-                placeholder.classList.remove('d-none');
-                selected.classList.add('d-none');
-                zone.classList.remove('app-file-upload--has-file');
+    form.querySelectorAll('[data-file-input]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            if (hasRequiredAttachment()) {
+                attachmentMessage.classList.add('d-none');
+                form.querySelectorAll('.app-file-upload--invalid').forEach(function (zone) {
+                    zone.classList.remove('app-file-upload--invalid');
+                });
+            }
+        });
+    });
+})();
+
+function formatFileSize(bytes) {
+    if (bytes >= 1073741824) {
+        return (bytes / 1073741824).toFixed(2) + ' GB';
+    }
+
+    if (bytes >= 1048576) {
+        return (bytes / 1048576).toFixed(2) + ' MB';
+    }
+
+    return (bytes / 1024).toFixed(1) + ' KB';
+}
+
+function assignFileToInput(input, file) {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    input.files = dataTransfer.files;
+}
+
+function bindFileUploadZone(zone) {
+    if (zone.dataset.fileUploadBound === 'true') {
+        return;
+    }
+
+    zone.dataset.fileUploadBound = 'true';
+
+    const input = zone.querySelector('[data-file-input]');
+    const label = zone.querySelector('.app-file-upload__label');
+    const placeholder = zone.querySelector('[data-file-placeholder]');
+    const selected = zone.querySelector('[data-file-selected]');
+    const nameEl = zone.querySelector('[data-file-name]');
+    const sizeEl = zone.querySelector('[data-file-size]');
+
+    if (!input || !placeholder || !selected) {
+        return;
+    }
+
+    const updateView = function () {
+        const file = input.files && input.files[0];
+
+        if (!file) {
+            placeholder.classList.remove('d-none');
+            selected.classList.add('d-none');
+            zone.classList.remove('app-file-upload--has-file');
+            return;
+        }
+
+        placeholder.classList.add('d-none');
+        selected.classList.remove('d-none');
+        zone.classList.add('app-file-upload--has-file');
+
+        if (nameEl) {
+            nameEl.textContent = file.name;
+        }
+
+        if (sizeEl) {
+            sizeEl.textContent = formatFileSize(file.size);
+        }
+    };
+
+    const setDragState = function (active) {
+        zone.classList.toggle('app-file-upload--dragover', active);
+    };
+
+    label?.addEventListener('click', function (event) {
+        event.preventDefault();
+        input.click();
+    });
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (eventName) {
+        zone.addEventListener(eventName, function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        });
+    });
+
+    zone.addEventListener('dragenter', function () {
+        setDragState(true);
+    });
+
+    zone.addEventListener('dragover', function () {
+        setDragState(true);
+    });
+
+    zone.addEventListener('dragleave', function (event) {
+        if (!zone.contains(event.relatedTarget)) {
+            setDragState(false);
+        }
+    });
+
+    zone.addEventListener('drop', function (event) {
+        setDragState(false);
+
+        const file = event.dataTransfer?.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        assignFileToInput(input, file);
+        updateView();
+    });
+
+    input.addEventListener('change', updateView);
+}
+
+(function () {
+    document.querySelectorAll('[data-file-upload]').forEach(bindFileUploadZone);
+})();
+
+(function () {
+    document.querySelectorAll('[data-attachments-manager]').forEach(function (manager) {
+        const list = manager.querySelector('[data-attachment-list]');
+        const addBtn = manager.querySelector('[data-add-attachment]');
+
+        if (!list) {
+            return;
+        }
+
+        const syncRemoveButtons = function () {
+            const rows = list.querySelectorAll('[data-attachment-row]');
+            rows.forEach(function (row, index) {
+                const removeBtn = row.querySelector('[data-remove-attachment]');
+                if (!removeBtn) {
+                    return;
+                }
+
+                if (rows.length === 1) {
+                    removeBtn.classList.add('d-none');
+                } else {
+                    removeBtn.classList.remove('d-none');
+                }
+
+                if (index === 0) {
+                    row.querySelector('[data-file-input]')?.setAttribute('required', '');
+                } else {
+                    row.querySelector('[data-file-input]')?.removeAttribute('required');
+                }
+            });
+        };
+
+        addBtn?.addEventListener('click', function () {
+            const template = list.querySelector('[data-attachment-row]');
+            if (!template) {
                 return;
             }
 
-            placeholder.classList.add('d-none');
-            selected.classList.remove('d-none');
-            zone.classList.add('app-file-upload--has-file');
+            const clone = template.cloneNode(true);
+            const suffix = Date.now().toString(36);
 
-            if (nameEl) {
-                nameEl.textContent = file.name;
+            clone.querySelectorAll('[data-file-upload]').forEach(function (zone) {
+                delete zone.dataset.fileUploadBound;
+            });
+
+            clone.querySelectorAll('[data-file-input]').forEach(function (input) {
+                input.value = '';
+                input.removeAttribute('required');
+            });
+
+            clone.querySelectorAll('[name="anexo_descricao[]"]').forEach(function (input) {
+                input.value = '';
+            });
+
+            clone.querySelectorAll('[data-file-placeholder]').forEach(function (el) {
+                el.classList.remove('d-none');
+            });
+
+            clone.querySelectorAll('[data-file-selected]').forEach(function (el) {
+                el.classList.add('d-none');
+            });
+
+            clone.querySelectorAll('.app-file-upload').forEach(function (zone) {
+                zone.classList.remove('app-file-upload--has-file');
+            });
+
+            clone.querySelectorAll('label[for]').forEach(function (label) {
+                const oldFor = label.getAttribute('for');
+                if (!oldFor) {
+                    return;
+                }
+
+                const newFor = oldFor + '-' + suffix;
+                label.setAttribute('for', newFor);
+                const field = clone.querySelector('#' + CSS.escape(oldFor));
+                if (field) {
+                    field.id = newFor;
+                }
+            });
+
+            list.appendChild(clone);
+            clone.querySelectorAll('[data-file-upload]').forEach(bindFileUploadZone);
+            syncRemoveButtons();
+        });
+
+        list.addEventListener('click', function (event) {
+            const target = event.target.closest('[data-remove-attachment]');
+            if (!target) {
+                return;
             }
 
-            if (sizeEl) {
-                sizeEl.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            const row = target.closest('[data-attachment-row]');
+            if (!row || list.querySelectorAll('[data-attachment-row]').length <= 1) {
+                return;
             }
-        };
 
-        input.addEventListener('change', updateView);
+            row.remove();
+            syncRemoveButtons();
+        });
+
+        syncRemoveButtons();
     });
 })();
 

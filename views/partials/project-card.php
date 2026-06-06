@@ -29,9 +29,9 @@ $showActions = $showActions ?? true;
         <div class="d-flex gap-2 mt-3 flex-wrap">
             <a href="/projetos/<?= e($project['id_projeto']) ?>/editar" class="btn btn-sm btn-senac-outline">Editar</a>
             <form method="post" action="/projetos/<?= e($project['id_projeto']) ?>/excluir" class="d-inline"
-                  onsubmit="return confirm('Confirma exclusão deste projeto?');">
+                  onsubmit="return confirm('Remover este projeto da sua lista? Ele ficará invisível e não poderá mais ser acessado.');">
                 <?= csrf_field() ?>
-                <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
             </form>
         </div>
         <?php endif; ?>

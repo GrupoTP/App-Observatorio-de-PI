@@ -1369,6 +1369,7 @@ h2.app-section-title {
 }
 
 .app-file-upload {
+    position: relative;
     border: 2px dashed #d1d5db;
     border-radius: 0.5rem;
     padding: 1.5rem;
@@ -1380,8 +1381,17 @@ h2.app-section-title {
     border-color: var(--senac-yellow);
 }
 
+.app-file-upload--dragover {
+    border-color: var(--senac-blue);
+    background-color: rgba(0, 75, 141, 0.06);
+}
+
 .app-file-upload--has-file {
     border-color: var(--senac-yellow);
+}
+
+.app-file-upload--invalid {
+    border-color: var(--senac-red);
 }
 
 .app-file-upload__input {
@@ -1422,6 +1432,54 @@ h2.app-section-title {
     display: block;
     font-size: 0.875rem;
     color: var(--senac-gray-medium);
+}
+
+.app-attachments {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.app-attachment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.app-attachment-row {
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    background: #fafafa;
+}
+
+.app-attachment-row__remove {
+    margin-top: 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--senac-red);
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0;
+    cursor: pointer;
+}
+
+.app-attachment-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    background: transparent;
+    color: var(--senac-blue);
+    font-weight: 600;
+    padding: 0;
+    cursor: pointer;
+}
+
+.app-attachment-add__icon,
+.app-attachment-add__icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 .app-form-actions {

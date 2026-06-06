@@ -50,7 +50,8 @@ final class ProjetoRepository
              FROM projeto p
              INNER JOIN turma t ON t.cod_turma = p.cod_turma
              INNER JOIN curso c ON c.id_curso = t.id_curso
-             WHERE p.id_projeto = :id LIMIT 1'
+             WHERE p.id_projeto = :id AND p.ativo = 1
+             LIMIT 1'
         );
         $stmt->execute(['id' => $id]);
 
@@ -131,8 +132,8 @@ final class ProjetoRepository
     {
         $stmt = Database::connection()->prepare(
             'INSERT INTO projeto (id_projeto, id_usuario_submissor, cod_turma, titulo, nome_grupo, descricao,
-                link_github, tecnologias, publico, situacao_projeto, prazo_especial, ativo)
-             VALUES (:id, :submissor, :turma, :titulo, :grupo, :desc, :github, :tech, :publico, :sit, :prazo, 1)'
+                link_repo_git, tecnologias, publico, situacao_projeto, prazo_especial, ativo)
+             VALUES (:id, :submissor, :turma, :titulo, :grupo, :desc, :repo_git, :tech, :publico, :sit, :prazo, 1)'
         );
         $stmt->execute($data);
     }
@@ -140,7 +141,7 @@ final class ProjetoRepository
     public function update(string $id, array $data): void
     {
         $stmt = Database::connection()->prepare(
-            'UPDATE projeto SET titulo = :titulo, nome_grupo = :grupo, descricao = :desc, link_github = :github,
+            'UPDATE projeto SET titulo = :titulo, nome_grupo = :grupo, descricao = :desc, link_repo_git = :repo_git,
                 tecnologias = :tech, publico = :publico, situacao_projeto = :sit
              WHERE id_projeto = :id'
         );
@@ -150,7 +151,9 @@ final class ProjetoRepository
 
     public function softDelete(string $id): void
     {
-        $stmt = Database::connection()->prepare('UPDATE projeto SET ativo = 0 WHERE id_projeto = :id');
+        $stmt = Database::connection()->prepare(
+            'UPDATE projeto SET ativo = 0 WHERE id_projeto = :id AND ativo = 1'
+        );
         $stmt->execute(['id' => $id]);
     }
 

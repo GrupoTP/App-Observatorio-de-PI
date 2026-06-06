@@ -22,8 +22,8 @@
                             <h2 class="h6 fw-bold"><?= e($project['titulo']) ?></h2>
                             <p class="small text-muted"><?= e($project['nome_curso']) ?> — <?= e($project['modulo']) ?></p>
                             <p class="small"><?= e(mb_strimwidth($project['descricao'], 0, 120, '…')) ?></p>
-                            <?php if (!empty($project['link_github'])): ?>
-                                <a href="<?= e($project['link_github']) ?>" target="_blank" rel="noopener" class="small">Ver no GitHub</a>
+                            <?php if (!empty($project['link_repo_git'])): ?>
+                                <a href="<?= e($project['link_repo_git']) ?>" target="_blank" rel="noopener" class="small">Ver repositório Git</a>
                             <?php endif; ?>
                         </div>
                     </div>

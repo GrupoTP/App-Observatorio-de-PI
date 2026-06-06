@@ -136,7 +136,11 @@ function turma_display_label(?array $turma): string
 
     $modulo = trim((string) ($turma['modulo'] ?? ''));
     $curso = mb_strtolower((string) ($turma['nome_curso'] ?? ''));
-    $sigla = str_contains($curso, 'desenvolvimento de sistemas') ? 'ADS' : (string) ($turma['nome_curso'] ?? '');
+    $sigla = match (true) {
+        str_contains($curso, 'desenvolvimento de sistemas') => 'ADS',
+        str_contains($curso, 'jogos') => 'Game Dev',
+        default => (string) ($turma['nome_curso'] ?? ''),
+    };
 
     return $modulo !== '' ? $sigla . ' - ' . $modulo : $sigla;
 }
@@ -177,4 +181,14 @@ function flash_old_input(array $input): void
 function clear_old_input(): void
 {
     unset($_SESSION['_old']);
+}
+
+function anexo_download_url(string $anexoId): string
+{
+    return '/anexos/' . rawurlencode($anexoId) . '/download';
+}
+
+function anexo_thumbnail_url(string $anexoId): string
+{
+    return '/anexos/' . rawurlencode($anexoId) . '/miniatura';
 }
