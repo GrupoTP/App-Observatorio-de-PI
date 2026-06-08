@@ -139,17 +139,34 @@ final class PiController extends Controller
         }
 
         $criteria = (new RubricaRepository())->allActive($project['cod_turma']);
-        $alunos = array_merge(
+        $alunos = array_values(array_filter(array_merge(
             [(new UsuarioRepository())->findById($project['id_usuario_submissor'])],
             (new ProjetoRepository())->coauthors($id)
-        );
+        )));
+
+        $feedbackRepo = new FeedbackRepository();
+        $existingFeedback = $feedbackRepo->findByProject($id);
+        $existingConceito = null;
+        if ($existingFeedback !== null) {
+            $scores = array_map(
+                fn($r) => (float) $r['conceito'],
+                $feedbackRepo->rubricaForFeedback((int) $existingFeedback['id_feedback'])
+            );
+            if ($scores !== []) {
+                $avg = array_sum($scores) / count($scores);
+                $existingConceito = nota_para_conceito($avg);
+            }
+        }
 
         $this->render('admin/avaliar-pi', [
             'headerTitle' => 'Avaliar PI',
             'pageTitle' => 'Avaliar PI',
             'project' => $project,
             'criteria' => $criteria,
-            'alunos' => array_filter($alunos),
+            'alunos' => $alunos,
+            'existingFeedback' => $existingFeedback,
+            'existingConceito' => $existingConceito,
+            'tipoInicial' => $request->query('type', 'grupo'),
         ]);
     }
 

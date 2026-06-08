@@ -224,7 +224,7 @@
                                     <?= lucide_tag('users', 'app-action-btn__icon') ?>
                                     Avaliar Grupo
                                 </a>
-                                <a href="/admin/alunos"
+                                <a href="/admin/pi/<?= e($g['id_projeto']) ?>/avaliar?type=individual"
                                    class="app-action-btn app-action-btn--purple app-action-btn--sm">
                                     <?= lucide_tag('edit-2', 'app-action-btn__icon') ?>
                                     Individual
