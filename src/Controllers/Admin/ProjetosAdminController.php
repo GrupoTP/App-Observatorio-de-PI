@@ -86,6 +86,7 @@ final class ProjetosAdminController extends Controller
             Flash::error($e->getMessage());
         }
 
-        redirect('/admin/projetos');
+        $redirectTo = $request->input('_redirect', '/admin/projetos') ?? '/admin/projetos';
+        redirect($redirectTo);
     }
 }

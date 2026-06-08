@@ -13,6 +13,7 @@ use App\Controllers\Controller;
 use App\Database;
 use App\Http\Request;
 use App\Repositories\ProjetoRepository;
+use App\Repositories\RubricaRepository;
 use App\Repositories\TurmaRepository;
 use App\Repositories\UsuarioRepository;
 use App\Support\Flash;
@@ -23,12 +24,28 @@ final class AlunosController extends Controller
 {
     public function index(Request $request, array $params = []): void
     {
-        $search = $request->query('q');
+        $search  = $request->query('q');
+        $cursoId = $request->query('curso');
+        $repo    = new UsuarioRepository();
+        $alunos  = $repo->listAlunos($search, $cursoId);
+
+        $projetoRepo = new ProjetoRepository();
+        $criteria    = (new RubricaRepository())->allActive();
+
+        $projectsByAluno = [];
+        foreach ($alunos as $a) {
+            $projectsByAluno[$a['id_usuario']] = $projetoRepo->forAluno($a['id_usuario']);
+        }
+
         $this->render('admin/alunos', [
-            'headerTitle' => 'Gerenciar Alunos',
-            'pageTitle' => 'Gerenciar Alunos',
-            'alunos' => (new UsuarioRepository())->listAlunos($search),
-            'search' => $search ?? '',
+            'headerTitle'     => 'Gerenciar Alunos',
+            'pageTitle'       => 'Gerenciar Alunos',
+            'alunos'          => $alunos,
+            'cursos'          => $repo->listCursos(),
+            'search'          => $search ?? '',
+            'cursoId'         => $cursoId ?? '',
+            'projectsByAluno' => $projectsByAluno,
+            'criteria'        => $criteria,
         ]);
     }
 

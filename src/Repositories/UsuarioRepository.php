@@ -56,23 +56,73 @@ final class UsuarioRepository
     }
 
     /** @return list<array<string, mixed>> */
-    public function listAlunos(?string $search = null): array
+    public function listAlunos(?string $search = null, ?string $cursoId = null): array
     {
-        $sql = 'SELECT u.*, a.portfolio_publico
+        // Subqueries pick the first active matricula per student to avoid duplicate rows.
+        $sql = "SELECT u.*, a.portfolio_publico,
+                       (SELECT c2.id_curso
+                        FROM matricula m2
+                        INNER JOIN turma t2 ON t2.cod_turma = m2.cod_turma AND t2.ativo = 1
+                        INNER JOIN curso c2 ON c2.id_curso = t2.id_curso
+                        WHERE m2.id_usuario = u.id_usuario AND (m2.ativo IS NULL OR m2.ativo = 1)
+                        ORDER BY m2.cod_matricula LIMIT 1) AS id_curso,
+                       (SELECT c2.nome_curso
+                        FROM matricula m2
+                        INNER JOIN turma t2 ON t2.cod_turma = m2.cod_turma AND t2.ativo = 1
+                        INNER JOIN curso c2 ON c2.id_curso = t2.id_curso
+                        WHERE m2.id_usuario = u.id_usuario AND (m2.ativo IS NULL OR m2.ativo = 1)
+                        ORDER BY m2.cod_matricula LIMIT 1) AS nome_curso,
+                       (SELECT t2.modulo
+                        FROM matricula m2
+                        INNER JOIN turma t2 ON t2.cod_turma = m2.cod_turma AND t2.ativo = 1
+                        WHERE m2.id_usuario = u.id_usuario AND (m2.ativo IS NULL OR m2.ativo = 1)
+                        ORDER BY m2.cod_matricula LIMIT 1) AS modulo
                 FROM usuario u
                 INNER JOIN aluno a ON a.id_usuario = u.id_usuario
-                WHERE u.ativo = 1';
+                WHERE u.ativo = 1";
         $params = [];
 
         if ($search !== null && $search !== '') {
-            $sql .= ' AND (u.nome_civil_nome LIKE :q OR u.nome_civil_sobrenome LIKE :q OR u.email_institucional LIKE :q)';
+            $sql .= " AND (u.nome_civil_nome LIKE :q OR u.nome_civil_sobrenome LIKE :q
+                      OR u.email_institucional LIKE :q
+                      OR EXISTS (
+                          SELECT 1 FROM matricula m2
+                          INNER JOIN turma t2 ON t2.cod_turma = m2.cod_turma
+                          INNER JOIN curso c2 ON c2.id_curso = t2.id_curso
+                          WHERE m2.id_usuario = u.id_usuario AND c2.nome_curso LIKE :q
+                      ))";
             $params['q'] = '%' . $search . '%';
+        }
+
+        if ($cursoId !== null && $cursoId !== '') {
+            $sql .= " AND EXISTS (
+                          SELECT 1 FROM matricula m2
+                          INNER JOIN turma t2 ON t2.cod_turma = m2.cod_turma AND t2.ativo = 1
+                          INNER JOIN curso c2 ON c2.id_curso = t2.id_curso
+                          WHERE m2.id_usuario = u.id_usuario AND c2.id_curso = :curso_id
+                      )";
+            $params['curso_id'] = $cursoId;
         }
 
         $sql .= ' ORDER BY u.nome_civil_nome, u.nome_civil_sobrenome';
 
         $stmt = Database::connection()->prepare($sql);
         $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function listCursos(): array
+    {
+        $stmt = Database::connection()->query(
+            'SELECT DISTINCT c.id_curso, c.nome_curso
+             FROM curso c
+             INNER JOIN turma t ON t.id_curso = c.id_curso AND t.ativo = 1
+             INNER JOIN matricula m ON m.cod_turma = t.cod_turma
+             WHERE c.ativo = 1
+             ORDER BY c.nome_curso'
+        );
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
