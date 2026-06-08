@@ -4870,6 +4870,122 @@ h2.app-section-title {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   /admin/alunos/novo — Cadastrar Usuário
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Cargo toggle grid */
+.app-cadastrar__cargo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.625rem;
+}
+
+@media (max-width: 600px) {
+    .app-cadastrar__cargo-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.app-cadastrar__cargo-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 0.5rem;
+    border: 2px solid #d1d5db;
+    border-radius: 0.625rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--senac-black);
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    text-align: center;
+    user-select: none;
+}
+
+.app-cadastrar__cargo-card input[type=radio] {
+    display: none;
+}
+
+.app-cadastrar__cargo-card--active {
+    border-color: var(--senac-blue);
+    background: #eff6ff;
+    color: var(--senac-blue);
+}
+
+/* Status toggle */
+.app-cadastrar__status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.625rem;
+    max-width: 400px;
+}
+
+.app-cadastrar__status-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+    border: 2px solid #d1d5db;
+    border-radius: 0.625rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--senac-black);
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    user-select: none;
+}
+
+.app-cadastrar__status-card input[type=radio] {
+    display: none;
+}
+
+.app-cadastrar__status-card--selected-active {
+    border-color: #16a34a;
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.app-cadastrar__status-card--selected-inactive {
+    border-color: #6b7280;
+    background: #f9fafb;
+    color: #374151;
+}
+
+/* LGPD info box variant */
+.app-info-box--shield .app-info-box__icon {
+    color: var(--senac-blue);
+}
+
+.app-info-box--shield {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+/* Field hint text */
+.app-field__hint {
+    font-size: 0.78rem;
+    color: var(--senac-gray-medium);
+    margin: 0.25rem 0 0;
+}
+
+/* Checkbox inline label */
+.app-field__checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.825rem;
+    color: var(--senac-gray-dark);
+    cursor: pointer;
+}
+
+.app-field__checkbox-label input[type=checkbox] {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+    accent-color: var(--senac-blue);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    /admin/pi/novo + /admin/pi/:id/editar — Form PI
    ───────────────────────────────────────────────────────────────────────────── */
 

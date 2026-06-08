@@ -1,6 +1,6 @@
 -- Copyright © 2026, Polyana Fontes; Thayná Batista da Silva — Integrative Projects Observatory All rights reserved.
 
--- Development seed data (demo logins: aluno@aluno, aluno2@aluno, professor@professor, admin@admin — password: senac123)
+-- Development seed data (demo logins: aluno@aluno, aluno2@aluno, professor@professor, admin@admin, parceiro@parceiro — password: senac123)
 
 SET NAMES utf8mb4;
 
@@ -58,6 +58,29 @@ INSERT INTO usuario (
     NULL, NULL, NULL, 'Recife', 'PE', 'Brasil',
     '2025-03-01 08:00:00'
 );
+
+-- Parceiro demo user
+INSERT INTO usuario (
+    id_usuario, email_institucional, nome_civil_nome, nome_civil_sobrenome,
+    senha_hash, senha_salt, ativo,
+    email_pessoal, email_pessoal_cod_validacao, email_pessoal_cod_exp,
+    json_curriculo,
+    cpf, data_nascimento, identidade_rg,
+    telefone1, telefone1_whatsapp, telefone2, telefone2_whatsapp,
+    cep, endereco, bairro, cidade, estado, pais,
+    data_criacao
+) VALUES (
+    'u-parceiro-001', 'parceiro@parceiro', 'Empresa', 'Parceira',
+    @pwd_hash, @pwd_salt, 1,
+    'parceiro@empresa.com', '', '2099-12-31 23:59:59',
+    NULL,
+    NULL, NULL, NULL,
+    NULL, 0, NULL, 0,
+    NULL, NULL, NULL, 'Recife', 'PE', 'Brasil',
+    '2025-03-01 08:00:00'
+);
+
+INSERT INTO parceiro (id_usuario, empresa) VALUES ('u-parceiro-001', 'Empresa Parceira Demonstração');
 
 INSERT INTO aluno (id_usuario, portfolio_publico, notificacoes) VALUES
 ('u-aluno-001', 1, 'email'),

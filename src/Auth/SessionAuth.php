@@ -14,6 +14,7 @@ final class SessionAuth
     public const ROLE_ALUNO = 'aluno';
     public const ROLE_PROFESSOR = 'professor';
     public const ROLE_COORDENADOR = 'coordenador';
+    public const ROLE_PARCEIRO = 'parceiro';
 
     public static function userId(): ?string
     {
@@ -43,6 +44,11 @@ final class SessionAuth
     public static function isAluno(): bool
     {
         return self::activeRole() === self::ROLE_ALUNO;
+    }
+
+    public static function isParceiro(): bool
+    {
+        return self::activeRole() === self::ROLE_PARCEIRO;
     }
 
     public static function login(string $userId, string $role): void

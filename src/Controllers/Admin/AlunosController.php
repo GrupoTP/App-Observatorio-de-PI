@@ -84,26 +84,48 @@ final class AlunosController extends Controller
     public function store(Request $request, array $params = []): void
     {
         $this->requireCsrf($request);
+        $allowedRoles = ['aluno', 'professor', 'coordenador', 'parceiro'];
         $role = $request->input('role', 'aluno') ?? 'aluno';
-        $id = Uuid::v4();
+        if (!in_array($role, $allowedRoles, true)) {
+            $role = 'aluno';
+        }
+
+        $id     = Uuid::v4();
         $hashed = Password::hash($request->input('senha', 'senac123') ?? 'senac123');
 
         try {
             (new UsuarioRepository())->createUsuario([
-                'id_usuario' => $id,
-                'email_institucional' => $request->input('email', '') ?? '',
-                'nome_civil_nome' => $request->input('nome', '') ?? '',
+                'id_usuario'           => $id,
+                'email_institucional'  => $request->input('email', '') ?? '',
+                'nome_civil_nome'      => $request->input('nome', '') ?? '',
                 'nome_civil_sobrenome' => $request->input('sobrenome', '') ?? '',
-                'senha_hash' => $hashed['hash'],
-                'senha_salt' => $hashed['salt'],
-                'email_pessoal' => $request->input('email_pessoal', '') ?? $request->input('email', ''),
+                'nome_social_nome'     => $request->input('nome_social') ?: null,
+                'senha_hash'           => $hashed['hash'],
+                'senha_salt'           => $hashed['salt'],
+                'email_pessoal'        => $request->input('email_pessoal', '') ?: ($request->input('email', '') ?? ''),
+                'cpf'                  => $request->input('cpf') ?: null,
+                'data_nascimento'      => $request->input('data_nascimento') ?: null,
+                'identidade_rg'        => $request->input('identidade_rg') ?: null,
+                'telefone1'            => $request->input('telefone1') ?: null,
+                'telefone1_whatsapp'   => isset($_POST['telefone1_whatsapp']) ? 1 : 0,
+                'telefone2'            => $request->input('telefone2') ?: null,
+                'telefone2_whatsapp'   => isset($_POST['telefone2_whatsapp']) ? 1 : 0,
+                'cep'                  => $request->input('cep') ?: null,
+                'endereco'             => $request->input('endereco') ?: null,
+                'bairro'               => $request->input('bairro') ?: null,
+                'cidade'               => $request->input('cidade') ?: null,
+                'estado'               => $request->input('estado') ?: null,
+                'pais'                 => $request->input('pais', 'Brasil') ?? 'Brasil',
+                'empresa'              => $request->input('empresa', '') ?? '',
+                'ativo'                => (int) ($request->input('ativo', '1') ?? '1'),
             ], $role);
 
             $codTurma = $request->input('cod_turma');
             if ($role === 'aluno' && $codTurma) {
+                $mat = $request->input('matricula') ?: Uuid::v4();
                 Database::connection()->prepare(
                     'INSERT INTO matricula (cod_matricula, id_usuario, cod_turma, ativo) VALUES (:m, :u, :t, 1)'
-                )->execute(['m' => Uuid::v4(), 'u' => $id, 't' => $codTurma]);
+                )->execute(['m' => $mat, 'u' => $id, 't' => $codTurma]);
             }
             if ($role === 'professor' && $codTurma) {
                 Database::connection()->prepare(

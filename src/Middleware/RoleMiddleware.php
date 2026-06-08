@@ -24,7 +24,14 @@ final class RoleMiddleware
             if ($strict) {
                 redirect(SessionAuth::isAluno() ? '/dashboard' : '/admin/dashboard');
             }
-            redirect('/dashboard');
+
+            // Route to the home page appropriate for each role
+            redirect(match ($role) {
+                'aluno'    => '/dashboard',
+                'parceiro' => '/parceiro',
+                'professor', 'coordenador' => '/admin/dashboard',
+                default    => '/login',
+            });
         }
     }
 }

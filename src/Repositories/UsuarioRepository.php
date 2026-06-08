@@ -51,6 +51,9 @@ final class UsuarioRepository
         if ($this->existsInTable($pdo, 'coordenador', $userId)) {
             $roles[] = 'coordenador';
         }
+        if ($this->existsInTable($pdo, 'parceiro', $userId)) {
+            $roles[] = 'parceiro';
+        }
 
         return $roles;
     }
@@ -134,24 +137,57 @@ final class UsuarioRepository
 
         try {
             $stmt = $pdo->prepare(
-                'INSERT INTO usuario (id_usuario, email_institucional, nome_civil_nome, nome_civil_sobrenome,
-                    senha_hash, senha_salt, ativo, email_pessoal, email_pessoal_cod_validacao, email_pessoal_cod_exp)
-                 VALUES (:id, :email, :nome, :sobrenome, :hash, :salt, 1, :email_pessoal, \'\', \'2099-12-31 23:59:59\')'
+                'INSERT INTO usuario (
+                    id_usuario, email_institucional, nome_civil_nome, nome_civil_sobrenome,
+                    senha_hash, senha_salt, ativo,
+                    email_pessoal, email_pessoal_cod_validacao, email_pessoal_cod_exp,
+                    nome_social_nome,
+                    cpf, data_nascimento, identidade_rg,
+                    telefone1, telefone1_whatsapp, telefone2, telefone2_whatsapp,
+                    cep, endereco, bairro, cidade, estado, pais
+                ) VALUES (
+                    :id, :email, :nome, :sobrenome,
+                    :hash, :salt, :ativo,
+                    :email_pessoal, \'\', \'2099-12-31 23:59:59\',
+                    :nome_social,
+                    :cpf, :data_nascimento, :identidade_rg,
+                    :telefone1, :tel1_wa, :telefone2, :tel2_wa,
+                    :cep, :endereco, :bairro, :cidade, :estado, :pais
+                )'
             );
             $stmt->execute([
-                'id' => $data['id_usuario'],
-                'email' => $data['email_institucional'],
-                'nome' => $data['nome_civil_nome'],
-                'sobrenome' => $data['nome_civil_sobrenome'],
-                'hash' => $data['senha_hash'],
-                'salt' => $data['senha_salt'],
-                'email_pessoal' => $data['email_pessoal'] ?? $data['email_institucional'],
+                'id'             => $data['id_usuario'],
+                'email'          => $data['email_institucional'],
+                'nome'           => $data['nome_civil_nome'],
+                'sobrenome'      => $data['nome_civil_sobrenome'],
+                'hash'           => $data['senha_hash'],
+                'salt'           => $data['senha_salt'],
+                'ativo'          => $data['ativo'] ?? 1,
+                'email_pessoal'  => $data['email_pessoal'] ?? $data['email_institucional'],
+                'nome_social'    => $data['nome_social_nome'] ?? null,
+                'cpf'            => $data['cpf'] ?? null,
+                'data_nascimento' => $data['data_nascimento'] ?? null,
+                'identidade_rg'  => $data['identidade_rg'] ?? null,
+                'telefone1'      => $data['telefone1'] ?? null,
+                'tel1_wa'        => $data['telefone1_whatsapp'] ?? 0,
+                'telefone2'      => $data['telefone2'] ?? null,
+                'tel2_wa'        => $data['telefone2_whatsapp'] ?? 0,
+                'cep'            => $data['cep'] ?? null,
+                'endereco'       => $data['endereco'] ?? null,
+                'bairro'         => $data['bairro'] ?? null,
+                'cidade'         => $data['cidade'] ?? null,
+                'estado'         => $data['estado'] ?? null,
+                'pais'           => $data['pais'] ?? 'Brasil',
             ]);
 
             match ($role) {
                 'aluno' => $pdo->prepare('INSERT INTO aluno (id_usuario) VALUES (:id)')->execute(['id' => $data['id_usuario']]),
                 'professor' => $pdo->prepare('INSERT INTO professor (id_usuario) VALUES (:id)')->execute(['id' => $data['id_usuario']]),
                 'coordenador' => $pdo->prepare('INSERT INTO coordenador (id_usuario) VALUES (:id)')->execute(['id' => $data['id_usuario']]),
+                'parceiro' => $pdo->prepare('INSERT INTO parceiro (id_usuario, empresa) VALUES (:id, :empresa)')->execute([
+                    'id' => $data['id_usuario'],
+                    'empresa' => $data['empresa'] ?? '',
+                ]),
                 default => null,
             };
 
@@ -274,7 +310,7 @@ final class UsuarioRepository
 
     private function existsInTable(PDO $pdo, string $table, string $userId): bool
     {
-        $allowed = ['aluno', 'professor', 'coordenador'];
+        $allowed = ['aluno', 'professor', 'coordenador', 'parceiro'];
         if (!in_array($table, $allowed, true)) {
             return false;
         }

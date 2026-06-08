@@ -17,6 +17,7 @@ use App\Controllers\CurriculoController;
 use App\Controllers\DashboardController;
 use App\Controllers\FeedbacksController;
 use App\Controllers\LoginController;
+use App\Controllers\ParceiroController;
 use App\Controllers\PortfolioController;
 use App\Controllers\PrazosController;
 use App\Controllers\ProjetosController;
@@ -62,6 +63,11 @@ $router->get('/portfolio/curriculo', [$curriculo, 'index'], ['auth']);
 $configController = new ConfiguracoesController();
 $router->get('/configuracoes', [$configController, 'index'], ['auth']);
 $router->post('/configuracoes', [$configController, 'update'], ['auth']);
+
+$parceiro = new ParceiroController();
+$router->get('/parceiro', [$parceiro, 'index'], ['auth', 'parceiro']);
+$router->get('/parceiro/projetos', [$parceiro, 'index'], ['auth', 'parceiro']);
+$router->get('/parceiro/projetos/{id}', [$parceiro, 'show'], ['auth', 'parceiro']);
 
 $adminDash = new DashboardAdminController();
 $router->get('/admin/dashboard', [$adminDash, 'index'], ['auth', 'staff']);

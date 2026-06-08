@@ -36,10 +36,17 @@ $professorItems = [
     ['icon' => 'settings', 'label' => 'Configurações', 'path' => '/configuracoes'],
 ];
 
+$parceiroItems = [
+    ['icon' => 'folder-open', 'label' => 'Projetos Integradores', 'path' => '/parceiro'],
+    ['icon' => 'settings',    'label' => 'Configurações',          'path' => '/configuracoes'],
+];
+
 if (SessionAuth::isAdmin()) {
     $menuItems = $adminItems;
 } elseif (SessionAuth::isProfessor()) {
     $menuItems = $professorItems;
+} elseif (SessionAuth::isParceiro()) {
+    $menuItems = $parceiroItems;
 } else {
     $menuItems = $studentItems;
 }

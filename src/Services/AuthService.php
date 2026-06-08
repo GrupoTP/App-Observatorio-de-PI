@@ -74,9 +74,10 @@ final class AuthService
         foreach ($dbRoles as $role) {
             $options[] = match ($role) {
                 'coordenador' => 'Administrador',
-                'professor' => 'Professor',
-                'aluno' => 'Aluno',
-                default => $role,
+                'professor'   => 'Professor',
+                'aluno'       => 'Aluno',
+                'parceiro'    => 'Parceiro',
+                default       => $role,
             };
         }
 
@@ -87,8 +88,9 @@ final class AuthService
     {
         return match ($profile) {
             'Administrador', 'Coordenador' => 'coordenador',
-            'Professor' => 'professor',
-            default => 'aluno',
+            'Professor'                    => 'professor',
+            'Parceiro'                     => 'parceiro',
+            default                        => 'aluno',
         };
     }
 }

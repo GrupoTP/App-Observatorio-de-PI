@@ -110,6 +110,10 @@ final class LoginController extends Controller
 
     private function redirectByRole(string $role): void
     {
-        redirect($role === 'aluno' ? '/dashboard' : '/admin/dashboard');
+        redirect(match ($role) {
+            'aluno'    => '/dashboard',
+            'parceiro' => '/projetos',
+            default    => '/admin/dashboard',
+        });
     }
 }

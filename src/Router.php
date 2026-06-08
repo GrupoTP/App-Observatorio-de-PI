@@ -105,9 +105,10 @@ final class Router
             'guest' => \App\Middleware\GuestMiddleware::handle(),
             'auth' => \App\Middleware\AuthMiddleware::handle(),
             'aluno' => \App\Middleware\RoleMiddleware::handle(['aluno']),
-            'staff' => \App\Middleware\RoleMiddleware::handle(['professor', 'coordenador']),
+            'staff'      => \App\Middleware\RoleMiddleware::handle(['professor', 'coordenador']),
             'admin_only' => \App\Middleware\RoleMiddleware::handle(['coordenador'], true),
-            default => null,
+            'parceiro'   => \App\Middleware\RoleMiddleware::handle(['parceiro']),
+            default      => null,
         };
     }
 }
