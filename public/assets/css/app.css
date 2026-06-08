@@ -4526,6 +4526,170 @@ h2.app-section-title {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   /admin/pi/novo + /admin/pi/:id/editar — Form PI
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Section heading inside form card */
+.app-pi-form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.app-pi-form-section-title h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--senac-black);
+    margin: 0;
+}
+
+/* 2-column form grid */
+.app-form-grid--2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 560px) {
+    .app-form-grid--2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ─── Pill-based member selector ─── */
+.app-pi-form__pills-label,
+.app-pi-form__available-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--senac-black);
+    margin-bottom: 0.5rem;
+}
+
+.app-pi-form__available-label {
+    margin-top: 1rem;
+}
+
+.app-pi-form__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: 2.25rem;
+    align-items: flex-start;
+}
+
+.app-pi-form__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    background: var(--senac-blue);
+    color: #fff;
+    border-radius: 0.5rem;
+    padding: 0.35rem 0.625rem 0.35rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.app-pi-form__pill-remove {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    padding: 0.2rem;
+    border-radius: 999px;
+    transition: background 0.15s;
+}
+
+.app-pi-form__pill-remove:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.app-pi-form__pill-remove svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    display: block;
+}
+
+.app-pi-form__pills-empty {
+    font-size: 0.85rem;
+    color: var(--senac-gray-medium);
+    font-style: italic;
+    line-height: 2.25rem;
+}
+
+/* Available students list */
+.app-pi-form__available {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.app-pi-form__available-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.625rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+}
+
+.app-pi-form__available-item:last-of-type {
+    border-bottom: none;
+}
+
+.app-pi-form__available-item:hover {
+    background: #eff6ff;
+}
+
+.app-pi-form__available-item--hidden {
+    display: none;
+}
+
+.app-pi-form__available-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--senac-black);
+}
+
+.app-pi-form__available-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--senac-blue);
+    flex-shrink: 0;
+}
+
+.app-pi-form__available-empty {
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--senac-gray-medium);
+    margin: 0;
+}
+
+/* Outline cancel button */
+.app-action-btn--outline {
+    background: transparent;
+    color: var(--senac-gray-dark);
+    border: 2px solid #d1d5db;
+}
+
+.app-action-btn--outline:hover,
+.app-action-btn--outline:focus {
+    background: #f9fafb;
+    border-color: #9ca3af;
+    color: var(--senac-black);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    /admin/pi/:id — Detalhes do Grupo PI
    ───────────────────────────────────────────────────────────────────────────── */
 
