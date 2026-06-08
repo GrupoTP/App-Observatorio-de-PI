@@ -244,12 +244,13 @@
 
 <script>
 (function () {
+    // Lowest → highest: index 0 = I, index 4 = AE (matches the PHP partial order)
     const concepts = [
-        { code: 'AE',  label: 'Atendido com Excelência', modifier: 'ae'  },
-        { code: 'O',   label: 'Ótimo',                   modifier: 'o'   },
-        { code: 'B',   label: 'Bom',                     modifier: 'b'   },
-        { code: 'ANS', label: 'Ainda Não Suficiente',     modifier: 'ans' },
         { code: 'I',   label: 'Insuficiente',             modifier: 'i'   },
+        { code: 'ANS', label: 'Ainda Não Suficiente',     modifier: 'ans' },
+        { code: 'B',   label: 'Bom',                     modifier: 'b'   },
+        { code: 'O',   label: 'Ótimo',                   modifier: 'o'   },
+        { code: 'AE',  label: 'Atendido com Excelência', modifier: 'ae'  },
     ];
 
     function initSliders(container) {

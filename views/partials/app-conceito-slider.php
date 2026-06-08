@@ -16,13 +16,13 @@
 
 $selectedCode = strtoupper(trim($selectedCode ?? ''));
 
-// Ordered highest → lowest (index 0 = AE, index 4 = I) for the range slider
+// Ordered lowest → highest (index 0 = I, index 4 = AE) so slider max = best grade
 $concepts = [
-    ['code' => 'AE',  'label' => 'Atendido com Excelência', 'modifier' => 'ae'],
-    ['code' => 'O',   'label' => 'Ótimo',                   'modifier' => 'o'],
-    ['code' => 'B',   'label' => 'Bom',                     'modifier' => 'b'],
-    ['code' => 'ANS', 'label' => 'Ainda Não Suficiente',     'modifier' => 'ans'],
     ['code' => 'I',   'label' => 'Insuficiente',             'modifier' => 'i'],
+    ['code' => 'ANS', 'label' => 'Ainda Não Suficiente',     'modifier' => 'ans'],
+    ['code' => 'B',   'label' => 'Bom',                     'modifier' => 'b'],
+    ['code' => 'O',   'label' => 'Ótimo',                   'modifier' => 'o'],
+    ['code' => 'AE',  'label' => 'Atendido com Excelência', 'modifier' => 'ae'],
 ];
 
 $selectedIndex = 2; // Default: B (middle)
