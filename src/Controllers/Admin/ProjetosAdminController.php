@@ -15,24 +15,29 @@ use App\Http\Request;
 use App\Repositories\FeedbackRepository;
 use App\Repositories\ProjetoRepository;
 use App\Repositories\RubricaRepository;
+use App\Repositories\TurmaRepository;
 use App\Support\Flash;
 
 final class ProjetosAdminController extends Controller
 {
     public function index(Request $request, array $params = []): void
     {
-        $search = $request->query('q');
-        $status = $request->query('status', 'todos');
+        $search = $request->query('q') ?? '';
+        $status = $request->query('status', 'todos') ?? 'todos';
+        $course = $request->query('course', 'todos') ?? 'todos';
 
         $this->render('admin/projetos', [
             'headerTitle' => 'Gerenciar Projetos',
             'pageTitle' => 'Gerenciar Projetos',
             'projects' => (new ProjetoRepository())->allForAdmin(
                 $status === 'todos' ? null : $status,
-                $search
+                $search !== '' ? $search : null,
+                $course === 'todos' ? null : $course
             ),
-            'search' => $search ?? '',
-            'status' => $status ?? 'todos',
+            'courses' => array_merge(['todos'], (new TurmaRepository())->distinctCourses()),
+            'search' => $search,
+            'status' => $status,
+            'course' => $course,
         ]);
     }
 

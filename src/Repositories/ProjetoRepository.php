@@ -61,15 +61,25 @@ final class ProjetoRepository
     }
 
     /** @return list<array<string, mixed>> */
-    public function allForAdmin(?string $status = null, ?string $search = null): array
-    {
-        $sql = 'SELECT p.*, t.nome_turma, t.modulo, c.nome_curso,
-                       u.nome_civil_nome, u.nome_civil_sobrenome
+    public function allForAdmin(
+        ?string $status = null,
+        ?string $search = null,
+        ?string $course = null
+    ): array {
+        $sql = "SELECT p.*, t.nome_turma, t.modulo, c.nome_curso,
+                       u.nome_civil_nome, u.nome_civil_sobrenome,
+                       u.email_institucional,
+                       (
+                           SELECT AVG(CAST(fr.conceito AS DECIMAL(5,2)))
+                           FROM feedback fb
+                           INNER JOIN feedback_rubrica fr ON fr.id_feedback = fb.id_feedback
+                           WHERE fb.id_projeto = p.id_projeto AND fb.ativo = 1
+                       ) AS conceito_medio
                 FROM projeto p
                 INNER JOIN turma t ON t.cod_turma = p.cod_turma
                 INNER JOIN curso c ON c.id_curso = t.id_curso
                 INNER JOIN usuario u ON u.id_usuario = p.id_usuario_submissor
-                WHERE p.ativo = 1';
+                WHERE p.ativo = 1";
         $params = [];
 
         if ($status !== null && $status !== '' && $status !== 'todos') {
@@ -78,9 +88,15 @@ final class ProjetoRepository
         }
 
         if ($search !== null && $search !== '') {
-            $sql .= ' AND (p.titulo LIKE :q OR p.nome_grupo LIKE :q2)';
-            $params['q'] = '%' . $search . '%';
+            $sql .= ' AND (p.titulo LIKE :q OR u.nome_civil_nome LIKE :q2 OR u.nome_civil_sobrenome LIKE :q3)';
+            $params['q']  = '%' . $search . '%';
             $params['q2'] = '%' . $search . '%';
+            $params['q3'] = '%' . $search . '%';
+        }
+
+        if ($course !== null && $course !== '' && $course !== 'todos') {
+            $sql .= ' AND c.nome_curso = :course';
+            $params['course'] = $course;
         }
 
         $sql .= ' ORDER BY p.prazo_especial DESC';
