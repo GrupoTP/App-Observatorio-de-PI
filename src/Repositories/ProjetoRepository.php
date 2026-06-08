@@ -95,13 +95,30 @@ final class ProjetoRepository
     /** @return list<array<string, mixed>> */
     public function listPiGroups(?string $status = null, ?string $search = null, ?string $course = null): array
     {
-        $sql = 'SELECT p.*, t.nome_turma, t.modulo, c.nome_curso,
-                       u.nome_civil_nome, u.nome_civil_sobrenome
+        $sql = "SELECT p.*, t.nome_turma, t.modulo, c.nome_curso,
+                       CONCAT(u.nome_civil_nome, ' ', u.nome_civil_sobrenome) AS submitter_nome,
+                       (
+                           SELECT GROUP_CONCAT(
+                               CONCAT(u2.nome_civil_nome, ' ', u2.nome_civil_sobrenome)
+                               ORDER BY u2.nome_civil_nome SEPARATOR ', '
+                           )
+                           FROM projeto_aluno_credito pac
+                           INNER JOIN usuario u2 ON u2.id_usuario = pac.id_usuario
+                           WHERE pac.id_projeto = p.id_projeto
+                       ) AS coautores_nomes,
+                       (
+                           SELECT fr.conceito
+                           FROM feedback fb
+                           INNER JOIN feedback_rubrica fr ON fr.id_feedback = fb.id_feedback
+                           WHERE fb.id_projeto = p.id_projeto AND fb.ativo = 1
+                           ORDER BY fb.id_feedback DESC
+                           LIMIT 1
+                       ) AS ultimo_conceito
                 FROM projeto p
                 INNER JOIN turma t ON t.cod_turma = p.cod_turma
                 INNER JOIN curso c ON c.id_curso = t.id_curso
                 INNER JOIN usuario u ON u.id_usuario = p.id_usuario_submissor
-                WHERE p.ativo = 1';
+                WHERE p.ativo = 1";
         $params = [];
 
         if ($status !== null && $status !== '' && $status !== 'todos') {

@@ -77,7 +77,18 @@ final class PiController extends Controller
 
         $members = (new ProjetoRepository())->coauthors($id);
         $submitter = (new UsuarioRepository())->findById($project['id_usuario_submissor']);
-        $feedback = (new FeedbackRepository())->findByProject($id);
+        $feedbackRepo = new FeedbackRepository();
+        $feedback = $feedbackRepo->findByProject($id);
+
+        $rubricaScores = [];
+        $rubricaCriteria = [];
+        if ($feedback !== null) {
+            $rubricaScores = $feedbackRepo->rubricaForFeedback((int) $feedback['id_feedback']);
+            $rawCriteria = (new RubricaRepository())->allActive($project['cod_turma']);
+            foreach ($rawCriteria as $c) {
+                $rubricaCriteria[$c['id_criterio']] = $c['nome'];
+            }
+        }
 
         $this->render('admin/pi-detalhes', [
             'headerTitle' => 'Detalhes PI',
@@ -86,6 +97,8 @@ final class PiController extends Controller
             'submitter' => $submitter,
             'members' => $members,
             'feedback' => $feedback,
+            'rubricaScores' => $rubricaScores,
+            'rubricaCriteria' => $rubricaCriteria,
         ]);
     }
 

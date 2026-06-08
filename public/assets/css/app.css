@@ -1126,15 +1126,16 @@ h2.app-section-title {
 }
 
 .app-action-btn--secondary {
-    background-color: transparent;
-    color: var(--senac-blue);
-    border-color: var(--senac-blue);
+    background-color: #4b5563;
+    color: #fff;
+    border-color: #4b5563;
 }
 
 .app-action-btn--secondary:hover,
 .app-action-btn--secondary:focus {
-    background-color: #e8f0f8;
-    color: var(--senac-blue);
+    background-color: #374151;
+    border-color: #374151;
+    color: #fff;
 }
 
 .app-action-btn--blue {
@@ -4203,4 +4204,521 @@ h2.app-section-title {
 /* remove main padding for curriculo full-width feel */
 .app-shell main:has(.curriculo-app) {
     padding: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   /admin/pi — Gerenciar Projetos Integradores
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Page header with side actions */
+.app-pi-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.app-pi-header__text {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.app-pi-header__actions {
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* ─── Info box ─── */
+.app-info-box {
+    display: flex;
+    gap: 0.75rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    align-items: flex-start;
+}
+
+.app-info-box__icon {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #1d4ed8;
+    margin-top: 0.125rem;
+}
+
+.app-info-box__title {
+    font-size: 0.875rem;
+    color: #1e40af;
+    margin: 0 0 0.25rem;
+}
+
+.app-info-box__list {
+    font-size: 0.85rem;
+    color: #1e40af;
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+/* ─── Filters grid for PI ─── */
+.app-pi-filters__fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 1rem;
+    align-items: end;
+}
+
+@media (max-width: 860px) {
+    .app-pi-filters__fields {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 540px) {
+    .app-pi-filters__fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ─── PI Group Card ─── */
+.app-pi-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    transition: box-shadow 0.2s;
+}
+
+.app-pi-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,.10);
+}
+
+.app-pi-card__main {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.app-pi-card__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.app-pi-card__name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.375rem;
+}
+
+.app-pi-card__group-icon {
+    width: 1.375rem;
+    height: 1.375rem;
+    color: var(--senac-blue);
+    flex-shrink: 0;
+}
+
+.app-pi-card__name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.app-pi-card__project {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--senac-gray-dark);
+    margin: 0 0 0.75rem;
+}
+
+.app-pi-card__details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--senac-gray-dark);
+}
+
+.app-pi-card__detail {
+    display: flex;
+    gap: 0.375rem;
+}
+
+.app-pi-card__detail dt {
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.app-pi-card__detail dd {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+}
+
+.app-pi-card__no-prazo {
+    color: #aaa;
+    font-style: italic;
+}
+
+.app-pi-card__edit-prazo {
+    display: inline-flex;
+    align-items: center;
+    color: var(--senac-blue);
+    opacity: 0.7;
+    text-decoration: none;
+    transition: opacity 0.15s;
+}
+
+.app-pi-card__edit-prazo:hover {
+    opacity: 1;
+}
+
+.app-pi-card__edit-prazo svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+/* ─── Right column: status + concept + actions ─── */
+.app-pi-card__side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+    min-width: 200px;
+}
+
+/* PI status badge */
+.app-pi-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.app-pi-status__icon {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+.app-pi-status--success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.app-pi-status--warning {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.app-pi-status--info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.app-pi-status--default {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* Concept badge inside card */
+.app-pi-card__conceito {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+}
+
+.app-pi-card__conceito-label {
+    font-size: 0.72rem;
+    color: var(--senac-gray-medium);
+    margin: 0;
+}
+
+/* ─── Card action buttons ─── */
+.app-pi-card__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.app-pi-card__actions-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Green & purple button variants */
+.app-action-btn--green {
+    background-color: #16a34a;
+    color: #fff;
+    border-color: #16a34a;
+}
+
+.app-action-btn--green:hover,
+.app-action-btn--green:focus {
+    background-color: #15803d;
+    border-color: #15803d;
+    color: #fff;
+}
+
+.app-action-btn--purple {
+    background-color: #7c3aed;
+    color: #fff;
+    border-color: #7c3aed;
+}
+
+.app-action-btn--purple:hover,
+.app-action-btn--purple:focus {
+    background-color: #6d28d9;
+    border-color: #6d28d9;
+    color: #fff;
+}
+
+.app-action-btn--rubrica {
+    background-color: #7c3aed;
+    color: #fff;
+    border-color: #7c3aed;
+}
+
+.app-action-btn--rubrica:hover,
+.app-action-btn--rubrica:focus {
+    background-color: #6d28d9;
+    border-color: #6d28d9;
+    color: #fff;
+}
+
+@media (max-width: 680px) {
+    .app-pi-card__main {
+        flex-direction: column;
+    }
+
+    .app-pi-card__side {
+        align-items: flex-start;
+        min-width: 0;
+    }
+
+    .app-pi-card__actions {
+        align-items: flex-start;
+    }
+
+    .app-pi-header {
+        flex-direction: column;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   /admin/pi/:id — Detalhes do Grupo PI
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.app-pi-detalhes__info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+
+.app-pi-detalhes__info-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.app-pi-detalhes__project-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--senac-black);
+    margin: 0 0 0.4rem;
+}
+
+.app-pi-detalhes__descricao {
+    font-size: 0.9rem;
+    color: var(--senac-gray-dark);
+    margin: 0 0 0.875rem;
+    line-height: 1.5;
+}
+
+.app-pi-detalhes__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+@media (max-width: 520px) {
+    .app-pi-detalhes__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.app-pi-detalhes__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.app-pi-detalhes__label {
+    font-size: 0.8rem;
+    color: var(--senac-gray-dark);
+}
+
+.app-pi-detalhes__label--section {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--senac-black);
+}
+
+.app-pi-detalhes__value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--senac-black);
+}
+
+/* ─── Members section ─── */
+.app-pi-detalhes__section {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1.25rem;
+}
+
+.app-pi-detalhes__section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.875rem;
+}
+
+.app-pi-detalhes__section-title h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--senac-black);
+    margin: 0;
+}
+
+.app-pi-detalhes__section-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--senac-blue);
+    flex-shrink: 0;
+}
+
+.app-pi-detalhes__members {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.app-pi-detalhes__member-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    transition: border-color 0.15s;
+}
+
+.app-pi-detalhes__member-card:hover {
+    border-color: var(--senac-blue);
+}
+
+.app-pi-detalhes__member-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--senac-black);
+    margin: 0 0 0.125rem;
+}
+
+.app-pi-detalhes__member-email {
+    font-size: 0.78rem;
+    color: var(--senac-gray-medium);
+    margin: 0;
+}
+
+/* ─── Evaluation section ─── */
+.app-pi-detalhes__conceito-final {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    margin: 0.875rem 0 1.25rem;
+}
+
+.app-mencao-badge--lg {
+    font-size: 0.875rem;
+    padding: 0.35rem 0.875rem;
+}
+
+.app-pi-detalhes__rubrica {
+    margin-bottom: 1.25rem;
+}
+
+.app-pi-detalhes__rubrica-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--senac-black);
+    margin: 0 0 0.625rem;
+}
+
+.app-pi-detalhes__rubrica-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.625rem;
+}
+
+.app-pi-detalhes__rubrica-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.app-pi-detalhes__rubrica-item--ae  { background: #f0fdf4; border-color: #bbf7d0; }
+.app-pi-detalhes__rubrica-item--o   { background: #eff6ff; border-color: #bfdbfe; }
+.app-pi-detalhes__rubrica-item--b   { background: #fffbeb; border-color: #fde68a; }
+.app-pi-detalhes__rubrica-item--ans { background: #fff7ed; border-color: #fed7aa; }
+.app-pi-detalhes__rubrica-item--i   { background: #fef2f2; border-color: #fecaca; }
+
+.app-pi-detalhes__rubrica-criterio {
+    font-size: 0.78rem;
+    color: var(--senac-gray-dark);
+    margin: 0;
+}
+
+/* ─── Feedback body ─── */
+.app-pi-detalhes__feedback-body {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1rem;
+}
+
+.app-pi-detalhes__feedback-text {
+    font-size: 0.875rem;
+    color: var(--senac-gray-dark);
+    line-height: 1.6;
+    margin: 0.375rem 0 0.5rem;
+}
+
+.app-pi-detalhes__feedback-meta {
+    font-size: 0.78rem;
+    color: var(--senac-gray-medium);
+    margin: 0;
 }
