@@ -17,6 +17,23 @@ CREATE TABLE usuario (
     email_pessoal_cod_validacao VARCHAR(64) NOT NULL,
     email_pessoal_cod_exp DATETIME NOT NULL,
     json_curriculo JSON NULL,
+    -- Extended profile fields
+    cpf VARCHAR(14) NULL,
+    data_nascimento DATE NULL,
+    identidade_rg VARCHAR(30) NULL,
+    telefone1 VARCHAR(20) NULL,
+    telefone1_whatsapp TINYINT(1) NOT NULL DEFAULT 0,
+    telefone2 VARCHAR(20) NULL,
+    telefone2_whatsapp TINYINT(1) NOT NULL DEFAULT 0,
+    cep VARCHAR(10) NULL,
+    endereco VARCHAR(255) NULL,
+    bairro VARCHAR(100) NULL,
+    cidade VARCHAR(100) NULL,
+    estado VARCHAR(2) NULL,
+    pais VARCHAR(100) NOT NULL DEFAULT 'Brasil',
+    foto_perfil VARCHAR(512) NULL,
+    data_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ultimo_login DATETIME NULL,
     PRIMARY KEY (id_usuario),
     UNIQUE KEY uk_usuario_email_institucional (email_institucional)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

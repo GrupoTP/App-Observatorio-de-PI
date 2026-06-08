@@ -20,10 +20,26 @@ final class PrazosController extends Controller
         $userId = SessionAuth::userId() ?? '';
         $turmas = (new TurmaRepository())->prazosForAluno($userId);
 
+        // Group by month label (e.g. "Junho de 2026")
+        $byMonth = [];
+        $monthNames = [
+            1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
+            5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
+            9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro',
+        ];
+        foreach ($turmas as $t) {
+            $ts = strtotime($t['prazo_projetos'] ?? '') ?: 0;
+            $monthLabel = $ts > 0
+                ? $monthNames[(int) date('n', $ts)] . ' de ' . date('Y', $ts)
+                : 'Sem prazo definido';
+            $byMonth[$monthLabel][] = $t;
+        }
+
         $this->render('aluno/prazos', [
             'headerTitle' => 'Prazos',
             'pageTitle' => 'Prazos e Entregas',
             'turmas' => $turmas,
+            'byMonth' => $byMonth,
         ]);
     }
 }

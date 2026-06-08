@@ -8,11 +8,56 @@ SET @pwd_salt = 'dev_seed_salt_2026';
 SET @pwd_hash = SHA2(CONCAT('senac123', @pwd_salt), 256);
 
 -- Users
-INSERT INTO usuario (id_usuario, email_institucional, nome_civil_nome, nome_civil_sobrenome, senha_hash, senha_salt, ativo, email_pessoal, email_pessoal_cod_validacao, email_pessoal_cod_exp, json_curriculo) VALUES
-('u-aluno-001', 'aluno@aluno', 'João', 'Silva', @pwd_hash, @pwd_salt, 1, 'joao.pessoal@email.com', '', '2099-12-31 23:59:59', NULL),
-('u-prof-001', 'professor@professor', 'Maria', 'Santos', @pwd_hash, @pwd_salt, 1, 'maria.pessoal@email.com', '', '2099-12-31 23:59:59', NULL),
-('u-admin-001', 'admin@admin', 'Carlos', 'Roberto', @pwd_hash, @pwd_salt, 1, 'carlos.pessoal@email.com', '', '2099-12-31 23:59:59', NULL),
-('u-aluno-002', 'aluno2@aluno', 'Lucas', 'Ferreira', @pwd_hash, @pwd_salt, 1, 'lucas@email.com', '', '2099-12-31 23:59:59', NULL);
+INSERT INTO usuario (
+    id_usuario, email_institucional, nome_civil_nome, nome_civil_sobrenome,
+    senha_hash, senha_salt, ativo,
+    email_pessoal, email_pessoal_cod_validacao, email_pessoal_cod_exp,
+    json_curriculo,
+    cpf, data_nascimento, identidade_rg,
+    telefone1, telefone1_whatsapp, telefone2, telefone2_whatsapp,
+    cep, endereco, bairro, cidade, estado, pais,
+    data_criacao
+) VALUES
+(
+    'u-aluno-001', 'aluno@aluno', 'João', 'Silva',
+    @pwd_hash, @pwd_salt, 1,
+    'joao.pessoal@email.com', '', '2099-12-31 23:59:59',
+    NULL,
+    '123.456.789-00', '2000-05-15', '12.345.678-9',
+    '(81) 99999-0001', 1, '(81) 99999-0002', 0,
+    '50000-000', 'Av. Boa Viagem, 1234, Apto 101', 'Boa Viagem', 'Recife', 'PE', 'Brasil',
+    '2025-03-01 08:00:00'
+),
+(
+    'u-prof-001', 'professor@professor', 'Maria', 'Santos',
+    @pwd_hash, @pwd_salt, 1,
+    'maria.pessoal@email.com', '', '2099-12-31 23:59:59',
+    NULL,
+    '987.654.321-00', '1985-08-20', NULL,
+    '(81) 98888-1001', 1, NULL, 0,
+    NULL, NULL, NULL, 'Recife', 'PE', 'Brasil',
+    '2025-03-01 08:00:00'
+),
+(
+    'u-admin-001', 'admin@admin', 'Carlos', 'Roberto',
+    @pwd_hash, @pwd_salt, 1,
+    'carlos.pessoal@email.com', '', '2099-12-31 23:59:59',
+    NULL,
+    '111.222.333-44', '1978-12-01', NULL,
+    '(81) 97777-2001', 0, NULL, 0,
+    NULL, NULL, NULL, 'Recife', 'PE', 'Brasil',
+    '2025-03-01 08:00:00'
+),
+(
+    'u-aluno-002', 'aluno2@aluno', 'Lucas', 'Ferreira',
+    @pwd_hash, @pwd_salt, 1,
+    'lucas@email.com', '', '2099-12-31 23:59:59',
+    NULL,
+    '222.333.444-55', '2001-11-30', NULL,
+    '(81) 96666-3001', 0, NULL, 0,
+    NULL, NULL, NULL, 'Recife', 'PE', 'Brasil',
+    '2025-03-01 08:00:00'
+);
 
 INSERT INTO aluno (id_usuario, portfolio_publico, notificacoes) VALUES
 ('u-aluno-001', 1, 'email'),
@@ -54,7 +99,7 @@ INSERT INTO rubrica_criterio (id_criterio, cod_turma, nome, peso, ordem, ativo) 
 -- Projects
 INSERT INTO projeto (id_projeto, id_usuario_submissor, cod_turma, id_usuario_coordenador_revisor, titulo, nome_grupo, descricao, link_repo_git, tecnologias, publico, situacao_projeto, prazo_especial, ativo) VALUES
 ('proj-001', 'u-aluno-001', 'turma-ads-m2', NULL, 'Sistema de Gestão Escolar', 'Grupo Alpha', 'Plataforma web para gestão acadêmica com módulos de matrícula e notas.', 'https://github.com/example/sge', 'PHP, MySQL, Bootstrap', 1, 'enviado', '2026-06-30 23:59:59', 1),
-('proj-002', 'u-aluno-001', 'turma-ads-m2', NULL, 'App de Delivery Sustentável', NULL, 'Aplicativo de entregas com foco em embalagens recicláveis.', 'https://github.com/example/delivery', 'React Native, Node.js', 0, 'avaliado', '2026-06-30 23:59:59', 1),
+('proj-002', 'u-aluno-001', 'turma-ads-m2', NULL, 'App de Delivery Sustentável', NULL, 'Aplicativo de entregas com foco em embalagens recicláveis.', 'https://github.com/example/delivery', 'React Native, Node.js', 1, 'avaliado', '2026-06-30 23:59:59', 1),
 ('proj-003', 'u-aluno-002', 'turma-ads-m2', NULL, 'E-commerce Artesanal', 'Grupo Beta', 'Loja virtual para artesãos locais.', 'https://github.com/example/artesanal', 'Vue.js, Laravel', 1, 'em-correcao', '2026-06-30 23:59:59', 1);
 
 INSERT INTO projeto_aluno_credito (id_projeto, id_usuario) VALUES

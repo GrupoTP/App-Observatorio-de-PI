@@ -228,23 +228,54 @@ final class ProjetoRepository
         return $members;
     }
 
+    /**
+     * Portfolio entries: public, evaluated, minimum conceito Bom (internal score >= 7.0),
+     * and linked to the student as submitter or credited member.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function portfolioForAluno(string $userId, FeedbackRepository $feedbackRepo): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT p.*, c.nome_curso, t.modulo, t.nome_turma
+             FROM projeto p
+             INNER JOIN turma t ON t.cod_turma = p.cod_turma
+             INNER JOIN curso c ON c.id_curso = t.id_curso
+             WHERE p.ativo = 1
+               AND p.publico = 1
+               AND p.situacao_projeto = \'avaliado\'
+               AND (
+                   p.id_usuario_submissor = :uid
+                   OR EXISTS (
+                       SELECT 1 FROM projeto_aluno_credito pac
+                       WHERE pac.id_projeto = p.id_projeto AND pac.id_usuario = :uid2
+                   )
+               )
+             ORDER BY p.prazo_especial DESC'
+        );
+        $stmt->execute(['uid' => $userId, 'uid2' => $userId]);
+
+        $projects = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $project) {
+            $feedback = $feedbackRepo->findByProject((string) $project['id_projeto']);
+            $grade = $feedbackRepo->averageGradeForProject((string) $project['id_projeto'], $feedback);
+            if ($grade === null || $grade < 7.0) {
+                continue;
+            }
+
+            $project['grade'] = $grade;
+            $project['conceito'] = nota_para_conceito($grade);
+            $project['turma_label'] = turma_display_label($project);
+            $projects[] = $project;
+        }
+
+        return $projects;
+    }
+
     /** @return list<array<string, mixed>> */
     public function portfolioPublic(string $userId): array
     {
-        $stmt = Database::connection()->prepare(
-            'SELECT p.*, c.nome_curso, t.modulo FROM projeto p
-             INNER JOIN turma t ON t.cod_turma = p.cod_turma
-             INNER JOIN curso c ON c.id_curso = t.id_curso
-             INNER JOIN aluno a ON a.id_usuario = :uid
-             WHERE p.ativo = 1 AND p.publico = 1 AND p.situacao_projeto = \'avaliado\'
-               AND (p.id_usuario_submissor = :uid2 OR EXISTS (
-                   SELECT 1 FROM projeto_aluno_credito pac WHERE pac.id_projeto = p.id_projeto AND pac.id_usuario = :uid3
-               ))
-             ORDER BY p.prazo_especial DESC'
-        );
-        $stmt->execute(['uid' => $userId, 'uid2' => $userId, 'uid3' => $userId]);
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->portfolioForAluno($userId, new FeedbackRepository());
     }
 
     public function countByAluno(string $userId): int

@@ -112,22 +112,78 @@ final class UsuarioRepository
         }
     }
 
-    public function updateProfile(string $userId, array $fields): void
+    /** Returns the usuario row plus the first matricula code for the user (if any). */
+    public function findByIdWithDetails(string $id): ?array
     {
         $stmt = Database::connection()->prepare(
-            'UPDATE usuario SET nome_civil_nome = :nome, nome_civil_sobrenome = :sobrenome,
-                nome_social_nome = :nome_social_nome, nome_social_sobrenome = :nome_social_sobrenome,
-                email_pessoal = :email_pessoal
+            'SELECT u.*, m.cod_matricula AS matricula
+             FROM usuario u
+             LEFT JOIN matricula m ON m.id_usuario = u.id_usuario AND m.ativo = 1
+             WHERE u.id_usuario = :id
+             LIMIT 1'
+        );
+        $stmt->execute(['id' => $id]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row ?: null;
+    }
+
+    public function updateProfile(string $userId, array $fields): void
+    {
+        $fotoPerfil = $fields['foto_perfil'] ?? null;
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE usuario SET
+                nome_civil_nome = :nome,
+                nome_civil_sobrenome = :sobrenome,
+                nome_social_nome = :nome_social_nome,
+                nome_social_sobrenome = :nome_social_sobrenome,
+                email_pessoal = :email_pessoal,
+                data_nascimento = :data_nascimento,
+                identidade_rg = :identidade_rg,
+                telefone1 = :telefone1,
+                telefone1_whatsapp = :telefone1_whatsapp,
+                telefone2 = :telefone2,
+                telefone2_whatsapp = :telefone2_whatsapp,
+                cep = :cep,
+                endereco = :endereco,
+                bairro = :bairro,
+                cidade = :cidade,
+                estado = :estado,
+                pais = :pais,
+                foto_perfil = COALESCE(:foto_perfil, foto_perfil)
              WHERE id_usuario = :id'
         );
         $stmt->execute([
-            'id' => $userId,
-            'nome' => $fields['nome_civil_nome'],
-            'sobrenome' => $fields['nome_civil_sobrenome'],
-            'nome_social_nome' => $fields['nome_social_nome'] ?: null,
+            'id'                  => $userId,
+            'nome'                => $fields['nome_civil_nome'],
+            'sobrenome'           => $fields['nome_civil_sobrenome'],
+            'nome_social_nome'    => $fields['nome_social_nome'] ?: null,
             'nome_social_sobrenome' => $fields['nome_social_sobrenome'] ?: null,
-            'email_pessoal' => $fields['email_pessoal'],
+            'email_pessoal'       => $fields['email_pessoal'],
+            'data_nascimento'     => $fields['data_nascimento'] ?: null,
+            'identidade_rg'       => $fields['identidade_rg'] ?: null,
+            'telefone1'           => $fields['telefone1'] ?: null,
+            'telefone1_whatsapp'  => empty($fields['telefone1_whatsapp']) ? 0 : 1,
+            'telefone2'           => $fields['telefone2'] ?: null,
+            'telefone2_whatsapp'  => empty($fields['telefone2_whatsapp']) ? 0 : 1,
+            'cep'                 => $fields['cep'] ?: null,
+            'endereco'            => $fields['endereco'] ?: null,
+            'bairro'              => $fields['bairro'] ?: null,
+            'cidade'              => $fields['cidade'] ?: null,
+            'estado'              => $fields['estado'] ?: null,
+            'pais'                => $fields['pais'] ?: 'Brasil',
+            'foto_perfil'         => $fotoPerfil ?: null,
         ]);
+    }
+
+    public function updateLastLogin(string $userId): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE usuario SET ultimo_login = NOW() WHERE id_usuario = :id'
+        );
+        $stmt->execute(['id' => $userId]);
     }
 
     public function updatePassword(string $userId, string $hash, string $salt): void
