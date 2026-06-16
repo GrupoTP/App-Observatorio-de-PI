@@ -44,6 +44,7 @@ $sliderId = 'slider_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $fieldName) . '_' .
            max="4"
            step="1"
            value="<?= (int) $selectedIndex ?>"
+           style="--val: <?= (int) $selectedIndex ?>"
            data-field="<?= e($fieldName) ?>"
            aria-label="Conceito para <?= e($fieldName) ?>">
 

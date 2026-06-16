@@ -220,6 +220,32 @@
         { code: 'AE',  label: 'Atendido com Excelência',  modifier: 'ae',  score: 4 },
     ];
 
+    function updateSliderDisplay(range) {
+        var idx = parseInt(range.value, 10);
+        range.style.setProperty('--val', idx);
+        var concept = CONCEPTS[Math.min(Math.max(idx, 0), 4)];
+        var wrapper = range.closest('.conceito-slider');
+        if (!wrapper) return;
+
+        var sliderId = wrapper.dataset.sliderId;
+
+        var hiddenInput = document.getElementById(sliderId + '_value');
+        if (hiddenInput) hiddenInput.value = concept.code;
+
+        var display = document.getElementById(sliderId + '_display');
+        if (display) {
+            CONCEPTS.forEach(function (c) {
+                display.classList.remove('conceito-slider__display--' + c.modifier);
+            });
+            display.classList.add('conceito-slider__display--' + concept.modifier);
+
+            var codeSpan = display.querySelector('.conceito-slider__display-code');
+            var labelSpan = display.querySelector('.conceito-slider__display-label');
+            if (codeSpan) codeSpan.textContent = concept.code;
+            if (labelSpan) labelSpan.textContent = concept.label;
+        }
+    }
+
     function updateMediaConceito() {
         var hiddenInputs = document.querySelectorAll('#avaliar-form input[type=hidden][name^="criterio_"]');
         if (hiddenInputs.length === 0) return;
@@ -243,15 +269,11 @@
         }
     }
 
-    // Watch slider hidden inputs for changes
-    document.addEventListener('change', function (e) {
-        if (e.target && e.target.type === 'range' && e.target.closest('.conceito-slider')) {
-            setTimeout(updateMediaConceito, 50);
-        }
-    });
+    // Update slider display and average when range input changes
     document.addEventListener('input', function (e) {
         if (e.target && e.target.type === 'range' && e.target.closest('.conceito-slider')) {
-            setTimeout(updateMediaConceito, 50);
+            updateSliderDisplay(e.target);
+            updateMediaConceito();
         }
     });
 
