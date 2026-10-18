@@ -1,0 +1,31 @@
+# Observatório de PI — cópia GitOps em observatorio.grupotp.polyclub.com.br
+# Gerenciado pelo ArgoCD (ver argocd/application.yaml fora do repo do app).
+# Este diretório é PÚBLICO: nenhum segredo em texto puro aqui.
+# Senhas do banco só como SealedSecret (sealedsecret-db.yaml), que só o
+# controller sealed-secrets do cluster consegue abrir.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: observatorio
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: observatorio-de-pi
+    includeSelectors: false
+
+resources:
+  - namespace.yaml
+  - configmap-app.yaml
+  - sealedsecret-db.yaml
+  - db.yaml
+  - web.yaml
+  - ingress.yaml
+  - networkpolicy.yaml
+
+images:
+  # Imagem pública no ghcr.io, publicada pelo workflow .github/workflows/publish-image.yml.
+  # Tag FIXADA (sem ArgoCD Image Updater). PLACEHOLDER: depois do 1º build, trocar
+  # "sha-PLACEHOLDER" pela tag sha-<7 chars> gerada (aba Actions ou página do pacote).
+  # Para atualizar o app depois: novo commit -> novo build -> trocar a tag aqui.
+  - name: ghcr.io/grupotp/app-observatorio-de-pi
+    newTag: sha-PLACEHOLDER

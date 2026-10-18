@@ -1,0 +1,48 @@
+# NÃO APLICADO. Aplicar só depois que:
+#   1) a pasta k8s/ estiver no GitHub (GrupoTP/App-Observatorio-de-PI, branch main)
+#   2) o temp-br tiver entrado no cluster (senão os pods ficam Pending)
+#   3) a imagem existir no ghcr.io, estiver PÚBLICA e a tag fixada no kustomization
+# Repo público: o ArgoCD lê via HTTPS sem credencial.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: observatorio
+  namespace: argocd
+spec:
+  description: Observatório de PI (portfólio Senac), cópia no temp-br.
+  sourceRepos:
+    - https://github.com/GrupoTP/App-Observatorio-de-PI.git
+  destinations:
+    - namespace: observatorio
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observatorio
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: observatorio
+  source:
+    repoURL: https://github.com/GrupoTP/App-Observatorio-de-PI.git
+    targetRevision: main
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observatorio
+  syncPolicy:
+    # Começa manual: no dia da migração, sync manual -> restore do dump -> só
+    # então ligar o automated (prune + selfHeal).
+    # automated:
+    #   prune: true
+    #   selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

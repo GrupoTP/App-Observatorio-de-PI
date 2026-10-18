@@ -1,0 +1,22 @@
+# Nada de segredo, infra ou dados locais dentro da imagem pública.
+.git
+.github
+.gitignore
+.dockerignore
+Dockerfile
+.env
+.env.*
+*.env
+k8s
+k8s-old
+argocd
+sql
+docker-compose.yml
+README.md
+storage/attachments/*
+!storage/attachments/.gitkeep
+public/assets/uploads/*
+!public/assets/uploads/.gitkeep
+.idea
+.vscode
+*.log

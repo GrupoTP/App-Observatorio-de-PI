@@ -1,0 +1,62 @@
+# Publica a imagem do Observatório de PI no GitHub Container Registry (ghcr.io).
+# Repo e pacote públicos => sem custo. Usa só o GITHUB_TOKEN automático (nenhum secret extra).
+name: Publish image
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "k8s/**"
+      - "argocd/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-image-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE: ghcr.io/grupotp/app-observatorio-de-pi   # ghcr exige minúsculas
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login no ghcr.io
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Metadados (tags e labels)
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.title=Observatório de Projetos Integradores
+            org.opencontainers.image.description=Observatório de PI (Senac), portfólio de Polyana Fontes e Thayná Batista da Silva
+
+      - name: Build e push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

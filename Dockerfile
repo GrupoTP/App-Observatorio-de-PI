@@ -24,6 +24,8 @@ COPY docker/php/docker-entrypoint.sh /usr/local/bin/app-entrypoint.sh
 
 RUN chmod +x /usr/local/bin/app-entrypoint.sh
 
+COPY . .
+
 EXPOSE 80
 
 ENTRYPOINT ["app-entrypoint.sh"]

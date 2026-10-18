@@ -1,0 +1,18 @@
+# Só o opi-web conversa com o MySQL. (kubectl exec para dump/restore não passa pela rede.)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: opi-db-only-from-web
+spec:
+  podSelector:
+    matchLabels:
+      app: opi-db
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: opi-web
+      ports:
+        - protocol: TCP
+          port: 3306

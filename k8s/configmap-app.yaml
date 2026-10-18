@@ -1,0 +1,12 @@
+# Configuração NÃO secreta. As senhas ficam no SealedSecret opi-db-credentials.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opi-config
+data:
+  APP_ENV: production
+  APP_NAME: Observatório de Projetos Integradores
+  DB_HOST: opi-db
+  DB_PORT: "3306"
+  DB_NAME: opi
+  DB_USER: opi_user

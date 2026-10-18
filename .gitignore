@@ -7,3 +7,10 @@ storage/attachments/*
 .idea/
 .vscode/
 *.log
+
+# Segredos e configuração local
+*.env
+!.env.example
+k8s/**/*secret*.yaml
+!k8s/sealedsecret-*.yaml
+k8s-old/
