@@ -24,8 +24,8 @@ resources:
 
 images:
   # Imagem pública no ghcr.io, publicada pelo workflow .github/workflows/publish-image.yml.
-  # Tag FIXADA (sem ArgoCD Image Updater). PLACEHOLDER: depois do 1º build, trocar
-  # "sha-PLACEHOLDER" pela tag sha-<7 chars> gerada (aba Actions ou página do pacote).
+  # Tag FIXADA (sem ArgoCD Image Updater): sha-<7 chars> do commit que gerou a imagem
+  # (aba Actions ou página do pacote).
   # Para atualizar o app depois: novo commit -> novo build -> trocar a tag aqui.
   - name: ghcr.io/grupotp/app-observatorio-de-pi
-    newTag: sha-PLACEHOLDER
+    newTag: sha-6b86fbd
