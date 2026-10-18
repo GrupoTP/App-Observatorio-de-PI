@@ -20,6 +20,7 @@ resources:
   - db.yaml
   - web.yaml
   - ingress.yaml
+  - ingress-grupotp.yaml
   - networkpolicy.yaml
 
 images:

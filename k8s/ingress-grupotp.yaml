@@ -1,0 +1,34 @@
+# grupotp.polyclub.com.br (portfólio da Thayná) servido pela cópia do temp-br.
+# Ingress separado, com certificado próprio (grupotp-tls), para não mexer no
+# certificado do observatorio.
+#
+# Prioridade: o Ingress antigo (namespace senac) tem o mesmo host e o Traefik
+# usa por padrão o tamanho da regra como prioridade (~50 para Host + PathPrefix(`/`)).
+# 100 ganha do Ingress antigo, mas PERDE para os Ingresses temporários do
+# cert-manager (HTTP-01, regra ~120 com /.well-known/acme-challenge/<token>),
+# para a emissão e a renovação dos certificados continuarem funcionando.
+# Não subir acima de ~110.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opi-ingress-grupotp
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.priority: "100"
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - grupotp.polyclub.com.br
+      secretName: grupotp-tls
+  rules:
+    - host: grupotp.polyclub.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opi-web
+                port:
+                  name: http
