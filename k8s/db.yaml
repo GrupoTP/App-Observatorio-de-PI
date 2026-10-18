@@ -18,7 +18,10 @@ kind: Deployment
 metadata:
   name: opi-db
 spec:
-  replicas: 1
+  # 0 desde 18/10/2026: o Observatório usa o MySQL NATIVO do temp-br (ver configmap-app.yaml).
+  # Mantido (com o PVC opi-db-pvc e o PV em Retain) só como rollback. Para voltar:
+  # replicas: 1 aqui e DB_HOST: opi-db no ConfigMap (e o initContainer do web.yaml).
+  replicas: 0
   strategy:
     type: Recreate          # PVC RWO: nunca dois MySQL no mesmo volume
   selector:
