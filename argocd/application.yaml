@@ -1,7 +1,6 @@
-# NÃO APLICADO. Aplicar só depois que:
-#   1) a pasta k8s/ estiver no GitHub (GrupoTP/App-Observatorio-de-PI, branch main)
-#   2) o temp-br tiver entrado no cluster (senão os pods ficam Pending)
-#   3) a imagem existir no ghcr.io, estiver PÚBLICA e a tag fixada no kustomization
+# AppProject + Application do Observatório de PI (namespace observatorio, node temp-br).
+# Este arquivo NÃO é sincronizado pelo ArgoCD: depois de alterar, aplicar no a-ca com
+#   sudo k3s kubectl apply -f argocd/application.yaml
 # Repo público: o ArgoCD lê via HTTPS sem credencial.
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
@@ -39,10 +38,9 @@ spec:
     server: https://kubernetes.default.svc
     namespace: observatorio
   syncPolicy:
-    # Começa manual: no dia da migração, sync manual -> restore do dump -> só
-    # então ligar o automated (prune + selfHeal).
-    # automated:
-    #   prune: true
-    #   selfHeal: true
+    # Sync automático ligado após a migração e o restore do dump (18/10/2026).
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
