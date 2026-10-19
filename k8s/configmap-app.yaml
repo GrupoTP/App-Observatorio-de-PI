@@ -6,7 +6,9 @@ metadata:
 data:
   APP_ENV: production
   APP_NAME: Observatório de Projetos Integradores
-  DB_HOST: opi-db
+  # MySQL NATIVO do host temp-br (IP interno do nó), desde 18/10/2026.
+  # O banco em container (opi-db, db.yaml) ficou com 0 réplicas, guardado como rollback.
+  DB_HOST: "10.0.0.180"
   DB_PORT: "3306"
   DB_NAME: opi
   DB_USER: opi_user
