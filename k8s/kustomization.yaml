@@ -29,4 +29,4 @@ images:
   # (aba Actions ou página do pacote).
   # Para atualizar o app depois: novo commit -> novo build -> trocar a tag aqui.
   - name: ghcr.io/grupotp/app-observatorio-de-pi
-    newTag: sha-6b86fbd
+    newTag: sha-60349d9
