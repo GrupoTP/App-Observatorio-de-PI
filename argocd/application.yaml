@@ -1,4 +1,4 @@
-# AppProject + Application do Observatório de PI (namespace observatorio, node temp-br).
+# AppProject + Application do Observatório de PI (namespace observatorio, node a, a-ca).
 # Este arquivo NÃO é sincronizado pelo ArgoCD: depois de alterar, aplicar no a-ca com
 #   sudo k3s kubectl apply -f argocd/application.yaml
 # Repo público: o ArgoCD lê via HTTPS sem credencial.
@@ -8,7 +8,7 @@ metadata:
   name: observatorio
   namespace: argocd
 spec:
-  description: Observatório de PI (portfólio Senac), cópia no temp-br.
+  description: Observatório de PI (portfólio Senac), cópia no a-ca.
   sourceRepos:
     - https://github.com/GrupoTP/App-Observatorio-de-PI.git
   destinations:

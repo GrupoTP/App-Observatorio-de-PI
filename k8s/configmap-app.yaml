@@ -1,4 +1,4 @@
-# Configuração NÃO secreta. As senhas ficam no SealedSecret opi-db-credentials.
+# Configuração NÃO secreta. A senha fica no SealedSecret observatorio-mysql-credenciais.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,9 +6,9 @@ metadata:
 data:
   APP_ENV: production
   APP_NAME: Observatório de Projetos Integradores
-  # MySQL NATIVO do host temp-br (IP interno do nó), desde 18/10/2026.
-  # O banco em container (opi-db, db.yaml) ficou com 0 réplicas, guardado como rollback.
-  DB_HOST: "10.0.0.180"
+  # MySQL compartilhado do host a-ca (mysql.service), o mesmo dos apps do polyclub.
+  # O usuário observatorio só aceita conexões vindas dos pods (10.42.0.%).
+  DB_HOST: a.ca.node.polyclub.games
   DB_PORT: "3306"
-  DB_NAME: opi
-  DB_USER: opi_user
+  DB_NAME: observatorio
+  DB_USER: observatorio

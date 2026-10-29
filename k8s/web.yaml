@@ -1,10 +1,11 @@
+# Anexos do Observatório, no disco /data do node a (a-ca). O banco fica no MySQL do host a-ca.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: opi-attachments-pvc
+  name: observatorio-anexos
 spec:
   accessModes: ["ReadWriteOnce"]
-  storageClassName: local-path
+  storageClassName: local-data
   resources:
     requests:
       storage: 2Gi
@@ -25,21 +26,15 @@ spec:
       labels:
         app: opi-web
       annotations:
-        polyclub.games/db: mysql-nativo-temp-br
+        polyclub.games/db: mysql-host-a-ca
     spec:
-      # PENDENTE: temp-br ainda não entrou no cluster (ver db.yaml).
       nodeSelector:
-        kubernetes.io/hostname: temp-br
-      tolerations:
-        - key: polyclub.games/temp-br
-          operator: Equal
-          value: "true"
-          effect: NoSchedule
+        kubernetes.io/hostname: a
       # Imagem pública no ghcr.io: não precisa de imagePullSecrets.
       initContainers:
         - name: wait-for-db
           image: busybox:1.36
-          command: ["sh", "-c", "until nc -z 10.0.0.180 3306; do echo 'Aguardando MySQL nativo do temp-br...'; sleep 3; done"]
+          command: ["sh", "-c", "until nc -z a.ca.node.polyclub.games 3306; do echo 'Aguardando o MySQL do a-ca...'; sleep 3; done"]
           resources:
             requests: { cpu: 10m, memory: 8Mi }
             limits:   { memory: 32Mi }
@@ -55,7 +50,7 @@ spec:
           env:
             - name: DB_PASSWORD
               valueFrom:
-                secretKeyRef: { name: opi-db-credentials, key: DB_PASSWORD }
+                secretKeyRef: { name: observatorio-mysql-credenciais, key: DB_PASSWORD }
           resources:
             requests: { cpu: 20m, memory: 64Mi }
             limits:   { memory: 512Mi }
@@ -73,7 +68,7 @@ spec:
       volumes:
         - name: attachments
           persistentVolumeClaim:
-            claimName: opi-attachments-pvc
+            claimName: observatorio-anexos
 ---
 apiVersion: v1
 kind: Service
