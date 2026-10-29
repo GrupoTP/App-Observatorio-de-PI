@@ -1,4 +1,4 @@
-# grupotp.polyclub.com.br (portfólio da Thayná) servido pela cópia do temp-br.
+# grupotp.polyclub.com.br (portfólio da Thayná) servido pela cópia do Observatório no a-ca.
 # Ingress separado, com certificado próprio (grupotp-tls), para não mexer no
 # certificado do observatorio.
 #

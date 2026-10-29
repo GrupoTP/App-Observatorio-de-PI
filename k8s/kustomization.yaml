@@ -1,7 +1,7 @@
 # Observatório de PI — cópia GitOps em observatorio.grupotp.polyclub.com.br
 # Gerenciado pelo ArgoCD (ver argocd/application.yaml fora do repo do app).
 # Este diretório é PÚBLICO: nenhum segredo em texto puro aqui.
-# Senhas do banco só como SealedSecret (sealedsecret-db.yaml), que só o
+# Senha do banco só como SealedSecret (sealedsecret-observatorio-mysql-credenciais.yaml), que só o
 # controller sealed-secrets do cluster consegue abrir.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -16,12 +16,10 @@ labels:
 resources:
   - namespace.yaml
   - configmap-app.yaml
-  - sealedsecret-db.yaml
-  - db.yaml
+  - sealedsecret-observatorio-mysql-credenciais.yaml
   - web.yaml
   - ingress.yaml
   - ingress-grupotp.yaml
-  - networkpolicy.yaml
 
 images:
   # Imagem pública no ghcr.io, publicada pelo workflow .github/workflows/publish-image.yml.
